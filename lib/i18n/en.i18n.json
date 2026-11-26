@@ -1133,7 +1133,7 @@
     },
     "preferredAudioLanguage": "Preferred audio language",
     "autoSelectAudio": "Choose audio by language",
-    "autoSelectAudioDescription": "Off keeps whatever audio track the file marks as default.",
+    "autoSelectAudioDescription": "On: picks the audio track in your preferred language whenever the file has one. Off: keeps the track the file marks as default.",
     "preferredSubtitleLanguage": "Preferred subtitle language",
     "subtitleMode": "Turn subtitles on",
     "subtitleModes": {

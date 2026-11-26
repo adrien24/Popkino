@@ -1287,7 +1287,7 @@ class _Translations$accountPreferences$fr extends Translations$accountPreference
 	@override late final _Translations$accountPreferences$groups$fr groups = _Translations$accountPreferences$groups$fr._(_root);
 	@override String get preferredAudioLanguage => 'Langue audio préférée';
 	@override String get autoSelectAudio => 'Choisir l\'audio par langue';
-	@override String get autoSelectAudioDescription => 'Désactivé : la piste audio marquée par défaut dans le fichier est conservée.';
+	@override String get autoSelectAudioDescription => 'Activé : la piste audio dans votre langue préférée est choisie dès que le fichier en contient une. Désactivé : la piste marquée par défaut dans le fichier est conservée.';
 	@override String get preferredSubtitleLanguage => 'Langue de sous-titres préférée';
 	@override String get subtitleMode => 'Activer les sous-titres';
 	@override late final _Translations$accountPreferences$subtitleModes$fr subtitleModes = _Translations$accountPreferences$subtitleModes$fr._(_root);
@@ -4476,7 +4476,7 @@ extension on TranslationsFr {
 			'accountPreferences.groups.personalMedia' => 'Médias personnels',
 			'accountPreferences.preferredAudioLanguage' => 'Langue audio préférée',
 			'accountPreferences.autoSelectAudio' => 'Choisir l\'audio par langue',
-			'accountPreferences.autoSelectAudioDescription' => 'Désactivé : la piste audio marquée par défaut dans le fichier est conservée.',
+			'accountPreferences.autoSelectAudioDescription' => 'Activé : la piste audio dans votre langue préférée est choisie dès que le fichier en contient une. Désactivé : la piste marquée par défaut dans le fichier est conservée.',
 			'accountPreferences.preferredSubtitleLanguage' => 'Langue de sous-titres préférée',
 			'accountPreferences.subtitleMode' => 'Activer les sous-titres',
 			'accountPreferences.subtitleModes.none' => 'Sélection manuelle',

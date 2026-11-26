@@ -1,4 +1,7 @@
 {
+  "accountPreferences": {
+    "autoSelectAudioDescription": "On: picks the audio track in your preferred language whenever the file has one. Off: keeps the track the file marks as default."
+  },
   "fork": {
     "about": {
       "basedOn": "Based on Plezy. Popkino is an independent project, neither developed nor endorsed by the Plezy project.",

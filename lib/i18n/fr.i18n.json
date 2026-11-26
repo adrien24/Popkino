@@ -1133,7 +1133,7 @@
     },
     "preferredAudioLanguage": "Langue audio préférée",
     "autoSelectAudio": "Choisir l'audio par langue",
-    "autoSelectAudioDescription": "Désactivé : la piste audio marquée par défaut dans le fichier est conservée.",
+    "autoSelectAudioDescription": "Activé : la piste audio dans votre langue préférée est choisie dès que le fichier en contient une. Désactivé : la piste marquée par défaut dans le fichier est conservée.",
     "preferredSubtitleLanguage": "Langue de sous-titres préférée",
     "subtitleMode": "Activer les sous-titres",
     "subtitleModes": {

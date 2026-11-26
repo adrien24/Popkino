@@ -1,2 +1,10 @@
 // FORK: utilitaires communs aux tests du fork
 const forkRemovedSkip = 'Fonction retirée dans Popkino (TRADEMARKS.md)';
+
+// FORK: langues-preferees — marks an upstream test whose behavior Popkino changed on purpose.
+// Each use must be listed in [forkChangedSkipAllowlist] (checked by fork_changed_skip_guard_test.dart).
+const forkChangedSkip = 'Comportement changé par Popkino (langues-preferees)';
+
+/// Upstream tests marked with [forkChangedSkip]. Key: `'<path> :: <test name>'`,
+/// value: the acceptance criterion that justifies the marking.
+const Map<String, String> forkChangedSkipAllowlist = {};

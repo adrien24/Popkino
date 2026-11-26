@@ -125,7 +125,8 @@ extension _VideoPlayerOpenMethods on VideoPlayerScreenState {
       mediaInfo: result.mediaInfo,
       sidecars: result.subtitleSidecars,
       profileSettings: context.read<AccountPreferencesController>().activePreferences,
-      preferredAudioTrack: preferredAudioTrack,
+      // FORK: langues-preferees — on a transcode, judge subtitles against the audio actually sent
+      preferredAudioTrack: preferredAudioTrack ?? forkTranscodedAudioAnchor(result),
       preferredSubtitleTrack: preferredSubtitleTrack,
       preferredSecondarySubtitleTrack: preferredSecondarySubtitleTrack,
       preserveSourceIdentity: preserveSubtitleSourceIdentity,

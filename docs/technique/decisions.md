@@ -88,3 +88,27 @@ Décision : numérotation indépendante de Plezy, en `X.Y.Z+N` dans `pubspec.yam
 release est `X.Y.Z` (numérique, sans préfixe ni suffixe, exigé par `UpdateService` et `build.yml`).
 Conséquences : la ligne `version:` de `pubspec.yaml` est en conflit à chaque montée de version upstream ; on garde
 toujours la nôtre.
+
+## D11 — Changer un comportement upstream par un crochet « null = upstream » (2026-11-26)
+Contexte : `langues-preferees` modifie l'ordre de sélection des pistes (`TrackSelectionService`), un fichier upstream
+très remanié dont le mainteneur considère l'ordre comme voulu (#1615) ; l'écart est donc permanent.
+Décision : la logique du fork vit dans `lib/fork/` en fonctions pures ; le fichier upstream ne contient qu'un appel
+marqué `// FORK: <slug> — <raison>` dont le résultat `null` laisse l'upstream décider. On n'ajoute aucune valeur aux
+enums upstream (les `switch` exhaustifs restent intacts) ; une décision du fork réutilise une valeur existante.
+Conséquences : un conflit de fusion se limite à replacer l'appel ; les tests `test/fork/` signalent un crochet perdu.
+
+## D4 (extension) — Tests upstream dont le comportement est changé par le fork (2026-11-26)
+Décision : un test upstream dont le résultat change volontairement à cause du fork n'est ni supprimé ni réécrit ; il
+reçoit `skip: forkChangedSkip` (`test/fork/fork_test_utils.dart`) et figure nominativement, avec le CA qui le justifie,
+dans `forkChangedSkipAllowlist` et dans le `plan.md` de la fonctionnalité. Une garde (`test/fork/fork_changed_skip_guard_test.dart`)
+échoue si le nombre de `forkChangedSkip` hors de `test/fork/` diffère de cette liste. Le comportement du fork est testé
+dans `test/fork/`.
+Conséquences : un `skip` ajouté lors d'une fusion ne peut pas masquer une régression upstream sans mise à jour visible
+de la liste.
+
+## D6 (extension) — Surcharge d'une clé de traduction upstream (2026-11-26)
+Décision : la surcouche `lib/fork/i18n/<locale>.json` peut, en plus des clés `fork.*`, **surcharger une clé upstream
+existante** quand seul le texte change (premier cas : `accountPreferences.autoSelectAudioDescription`). La surcharge est
+signalée dans le `_comment` de `lib/fork/i18n/rebrand_rules.json`. Les langues non surchargées gardent le texte upstream.
+Conséquences : aucun changement Dart pour un correctif de libellé ; à la fusion, relire les clés surchargées si
+l'upstream change leur sens.

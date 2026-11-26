@@ -1,0 +1,179 @@
+// FORK: langues-preferees — "preferred language first" rule for the track selection ladder.
+//
+// Both functions return null when the rule has nothing to say, in which case
+// the upstream ladder applies untouched. See
+// `docs/technique/langues-preferees/plan.md` for the reasoning behind each case.
+import '../media/media_item.dart';
+import '../media/media_kind.dart';
+import '../media/media_server_user_profile.dart';
+import '../media/media_source_info.dart';
+import '../mpv/mpv.dart';
+import '../providers/account_preferences_controller.dart';
+import '../services/playback_initialization_types.dart';
+import '../services/playback_subtitle_resolver.dart';
+import '../services/track_selection_service.dart';
+import '../utils/app_logger.dart';
+import '../utils/subtitle_forced_semantics.dart';
+import 'track_choice_memory.dart';
+
+/// The profile when the rule may act at all (conditions shared by audio and
+/// subtitles), or null (A1/S1): no profile, "choose audio by language" off,
+/// no preferred audio language, or music.
+MediaServerUserProfile? _activeProfile(TrackSelectionService service) =>
+    _profileIfRuleApplies(service.profileSettings, service.metadata);
+
+MediaServerUserProfile? _profileIfRuleApplies(MediaServerUserProfile? profile, MediaItem item) {
+  if (profile == null || !profile.autoSelectAudio) return null;
+  final audioLanguage = profile.defaultAudioLanguage;
+  if (audioLanguage == null || audioLanguage.isEmpty) return null;
+  if (item.kind == MediaKind.track) return null;
+  return profile;
+}
+
+/// The audio row the server has chosen for this item, if any.
+MediaAudioTrack? _serverAudioRow(TrackSelectionService service) {
+  final info = service.plexMediaInfo;
+  if (info == null) return null;
+  for (final row in info.audioTracks) {
+    if (row.selected) return row;
+  }
+  if (!service.metadata.backend.usesMediaBrowserApi) return null;
+  final defaultIndex = info.defaultAudioStreamIndex;
+  if (defaultIndex == null) return null;
+  for (final row in info.audioTracks) {
+    if ((row.index ?? row.id) == defaultIndex) return row;
+  }
+  return null;
+}
+
+/// Audio rule: the track in the profile's preferred language, unless the
+/// server already chose that language (A2), the user picked by hand (A3), or
+/// the file has no such track (A4).
+TrackSelectionResult<AudioTrack>? forkPreferredAudio(TrackSelectionService service, List<AudioTrack> availableTracks) {
+  if (availableTracks.isEmpty) return null;
+  final profile = _activeProfile(service);
+  if (profile == null) return null;
+  final preferred = profile.defaultAudioLanguage!;
+
+  final serverRow = _serverAudioRow(service);
+  if (serverRow != null && service.languageMatches(serverRow.languageCode ?? serverRow.language, preferred)) {
+    return null;
+  }
+  if (ForkTrackChoiceMemory.hasManualPick(service.metadata, ForkTrackKind.audio)) return null;
+
+  final inLanguage = availableTracks.where((t) => service.languageMatches(t.language, preferred)).toList();
+  if (inLanguage.isEmpty) return null;
+  final track = inLanguage.where((t) => t.isDefault).firstOrNull ?? inLanguage.first;
+
+  appLogger.d('Fork preferred language: audio $preferred over server selection');
+  return TrackSelectionResult(track, TrackSelectionPriority.profile);
+}
+
+/// Subtitle rule: follow the profile's subtitle mode with the preferred
+/// subtitle language, judged against the audio actually selected. Never picks a
+/// subtitle in another language (CA7).
+TrackSelectionResult<SubtitleTrack>? forkPreferredSubtitle(
+  TrackSelectionService service,
+  List<SubtitleTrack> availableTracks,
+  AudioTrack? selectedAudioTrack,
+) {
+  final profile = _activeProfile(service);
+  if (profile == null) return null;
+  final subtitleLanguage = profile.defaultSubtitleLanguage;
+  if (subtitleLanguage == null || subtitleLanguage.isEmpty) return null;
+  final mode = profile.subtitleMode;
+  if (mode != SubtitlePlaybackMode.always &&
+      mode != SubtitlePlaybackMode.smart &&
+      mode != SubtitlePlaybackMode.onlyForced) {
+    return null;
+  }
+  if (ForkTrackChoiceMemory.hasManualPick(service.metadata, ForkTrackKind.subtitle)) return null;
+
+  bool inSubtitleLanguage(SubtitleTrack t) => service.languageMatches(t.language, subtitleLanguage);
+
+  // S3: a native track of the preferred language is announced but has not
+  // arrived yet; the upstream ladder handles the wait.
+  if (!availableTracks.any(inSubtitleLanguage)) {
+    final announced = service.plexMediaInfo?.subtitleTracks ?? const <MediaSubtitleTrack>[];
+    if (announced.any((row) => service.languageMatches(row.languageCode ?? row.language, subtitleLanguage))) {
+      return null;
+    }
+  }
+
+  SubtitleTrack? forced() => availableTracks.where((t) => inSubtitleLanguage(t) && t.effectiveForced).firstOrNull;
+  SubtitleTrack? full() {
+    final candidates = availableTracks.where((t) => inSubtitleLanguage(t) && !t.effectiveForced).toList();
+    final preferredFull = candidates.where((t) => t.isDefault).firstOrNull ?? candidates.firstOrNull;
+    return preferredFull ?? forced();
+  }
+
+  final audioInSubtitleLanguage =
+      selectedAudioTrack != null && service.languageMatches(selectedAudioTrack.language, subtitleLanguage);
+  final audioInPreferredAudioLanguage =
+      selectedAudioTrack != null && service.languageMatches(selectedAudioTrack.language, profile.defaultAudioLanguage);
+
+  final SubtitleTrack? chosen;
+  if (mode != SubtitlePlaybackMode.onlyForced && audioInSubtitleLanguage) {
+    chosen = forced();
+  } else if (mode == SubtitlePlaybackMode.always) {
+    chosen = full();
+  } else if (mode == SubtitlePlaybackMode.smart) {
+    chosen = audioInPreferredAudioLanguage ? forced() : full();
+  } else {
+    chosen = forced();
+  }
+
+  appLogger.d('Fork preferred language: subtitle $subtitleLanguage ($mode) over server selection');
+  return TrackSelectionResult(chosen ?? SubtitleTrack.off, TrackSelectionPriority.profile);
+}
+
+/// Longest wait for the active profile to load before a launch, so a cold start
+/// (resume row, deep link) does not resolve the stream without the preference.
+const Duration _launchProfileWait = Duration(seconds: 2);
+
+/// Audio intent to hand to the stream resolver at launch: the profile's
+/// preferred language as a semantic carry (never an item-bound id). Backends
+/// resolve it for the transcoder; direct play ignores it beyond the active
+/// stream id. Returns null when the rule does not apply (A1) or the user picked
+/// by hand (A3). Waits at most 2 s, and only when the profile is not loaded yet.
+Future<AudioTrack?> forkLaunchAudioIntent({
+  required MediaItem item,
+  required AccountPreferencesController controller,
+}) async {
+  if (controller.activePreferences == null) {
+    try {
+      await controller.ensureActiveLoaded().timeout(_launchProfileWait);
+    } catch (e) {
+      appLogger.d('Fork preferred language: profile not ready for the launch intent', error: e);
+    }
+  }
+  final profile = _profileIfRuleApplies(controller.activePreferences, item);
+  if (profile == null) return null;
+  if (ForkTrackChoiceMemory.hasManualPick(item, ForkTrackKind.audio)) return null;
+  return AudioTrack(id: carriedAudioTrackId, language: profile.defaultAudioLanguage);
+}
+
+/// The audio descriptor of the stream a transcode actually sends, so subtitles
+/// are resolved for that audio (CA6/CA12) even when the intent was declined.
+/// Null for direct play or when the row is unknown.
+AudioTrack? forkTranscodedAudioAnchor(PlaybackInitializationResult result) {
+  final info = result.mediaInfo;
+  if (!result.isTranscoding || info == null) return null;
+  final activeId = result.activeAudioStreamId;
+  MediaAudioTrack? row;
+  if (activeId != null) {
+    row = info.audioTracks.where((t) => t.id == activeId).firstOrNull;
+  }
+  row ??= info.audioTracks.where((t) => t.selected).firstOrNull;
+  return row == null ? null : PlaybackSubtitleResolver.audioTrackForSource(row);
+}
+
+/// The value `_selectedAudioStreamId` takes after a session commit. With direct
+/// play the launch intent comes back as the active stream id; keeping it would
+/// send it to the transcoder on a later quality change and undo a manual pick
+/// made in the player. When transcoding, the id is the stream really sent.
+int? forkAudioStreamIdAfterCommit({
+  required int? sessionAudioStreamId,
+  required bool launchIntentUsed,
+  required bool isTranscoding,
+}) => launchIntentUsed && !isTranscoding ? null : sessionAudioStreamId;

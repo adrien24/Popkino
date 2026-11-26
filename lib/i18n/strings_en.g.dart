@@ -3205,8 +3205,8 @@ class Translations$accountPreferences$en {
 	/// en: 'Choose audio by language'
 	String get autoSelectAudio => 'Choose audio by language';
 
-	/// en: 'Off keeps whatever audio track the file marks as default.'
-	String get autoSelectAudioDescription => 'Off keeps whatever audio track the file marks as default.';
+	/// en: 'On: picks the audio track in your preferred language whenever the file has one. Off: keeps the track the file marks as default.'
+	String get autoSelectAudioDescription => 'On: picks the audio track in your preferred language whenever the file has one. Off: keeps the track the file marks as default.';
 
 	/// en: 'Preferred subtitle language'
 	String get preferredSubtitleLanguage => 'Preferred subtitle language';
@@ -9212,7 +9212,7 @@ extension on Translations {
 			'accountPreferences.groups.personalMedia' => 'Personal media',
 			'accountPreferences.preferredAudioLanguage' => 'Preferred audio language',
 			'accountPreferences.autoSelectAudio' => 'Choose audio by language',
-			'accountPreferences.autoSelectAudioDescription' => 'Off keeps whatever audio track the file marks as default.',
+			'accountPreferences.autoSelectAudioDescription' => 'On: picks the audio track in your preferred language whenever the file has one. Off: keeps the track the file marks as default.',
 			'accountPreferences.preferredSubtitleLanguage' => 'Preferred subtitle language',
 			'accountPreferences.subtitleMode' => 'Turn subtitles on',
 			'accountPreferences.subtitleModes.none' => 'Manually selected',

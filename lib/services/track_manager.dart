@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import '../exceptions/media_server_exceptions.dart';
+import '../fork/track_choice_memory.dart'; // FORK: langues-preferees — manual pick flag
 import '../i18n/strings.g.dart';
 import '../mpv/mpv.dart';
 
@@ -544,6 +545,14 @@ class TrackManager {
   /// the source cannot be addressed.
   Future<int?> _guardTrackChange(MediaSourceInfo? info, String trackType) async {
     if (!await shouldPersistTrackSelections()) return null;
+
+    // FORK: langues-preferees — flag explicit and carried picks (CA4bis, CA4ter) as manual
+    unawaited(
+      ForkTrackChoiceMemory.recordManualPick(
+        metadata,
+        trackType == 'audio' ? ForkTrackKind.audio : ForkTrackKind.subtitle,
+      ),
+    );
 
     if (persistTrackPreference == null) {
       await _ensureServerRemembersSelections(trackType);

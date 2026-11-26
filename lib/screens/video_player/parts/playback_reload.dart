@@ -210,6 +210,11 @@ extension _VideoPlayerReloadMethods on VideoPlayerScreenState {
         if (!isCurrentSourceSwitch()) return PlaybackSourceChangeOutcome.superseded;
       }
 
+      // FORK: langues-preferees — flag the pick as manual only once the server accepted it
+      // (recordManualPick itself no-ops when remembering is off, so no extra await here.)
+      if (isAudioChange) unawaited(ForkTrackChoiceMemory.recordManualPick(_currentMetadata, ForkTrackKind.audio));
+      if (isSubtitleChange) unawaited(ForkTrackChoiceMemory.recordManualPick(_currentMetadata, ForkTrackKind.subtitle));
+
       // A quality picked here outranks a downloaded copy from now on — for
       // this switch, a retry of it, and later episodes (issue #2466).
       if (isPresetChange) _qualityPresetExplicit = true;
@@ -581,6 +586,13 @@ extension _VideoPlayerReloadMethods on VideoPlayerScreenState {
         final playbackResolver = PlaybackSourceResolver(serverManager: serverManager, database: database);
         await stoppedProgressFuture;
         if (!isCurrentReload()) return MediaReloadOutcome.superseded;
+        // FORK: langues-preferees — the profile's audio language as an intent for the resolver only
+        // (not for the subtitle resolver or the track manager, so no server write is triggered).
+        final forkIntent = initializationAudioTrack == null && targetAudioStreamId == null
+            ? await forkLaunchAudioIntent(item: metadata, controller: accountPreferences)
+            : null;
+        if (!isCurrentReload()) return MediaReloadOutcome.superseded;
+        _forkLaunchIntentUsed = forkIntent != null;
         final playbackContext = await playbackResolver.resolve(
           PlaybackInitializationOptions(
             metadata: metadata,
@@ -589,7 +601,7 @@ extension _VideoPlayerReloadMethods on VideoPlayerScreenState {
             preferredVersionSignature: preferredVersionSignature,
             qualityPreset: targetQualityPreset,
             selectedAudioStreamId: targetAudioStreamId,
-            preferredAudioTrack: initializationAudioTrack,
+            preferredAudioTrack: initializationAudioTrack ?? forkIntent,
             preferredSubtitleTrack: initializationSubtitleTrack,
             sessionIdentifier: _playbackSessionIdentifier,
             transcodeSessionId: _playbackTranscodeSessionId,

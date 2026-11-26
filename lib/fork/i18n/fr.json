@@ -1,4 +1,7 @@
 {
+  "accountPreferences": {
+    "autoSelectAudioDescription": "Activé : la piste audio dans votre langue préférée est choisie dès que le fichier en contient une. Désactivé : la piste marquée par défaut dans le fichier est conservée."
+  },
   "fork": {
     "about": {
       "basedOn": "Basé sur Plezy. Popkino est un projet indépendant, ni développé ni soutenu par le projet Plezy.",

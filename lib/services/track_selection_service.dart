@@ -2,6 +2,7 @@ import 'dart:async';
 
 import '../mpv/mpv.dart';
 
+import '../fork/preferred_languages.dart'; // FORK: langues-preferees — preferred language rule hooks
 import '../media/media_backend.dart';
 import '../media/media_item.dart';
 import '../media/media_server_user_profile.dart';
@@ -974,6 +975,10 @@ class TrackSelectionService {
       appLogger.d('Audio carry declined: ${preferredAudioTrack.language}/${preferredAudioTrack.title}');
     }
 
+    // FORK: langues-preferees — preferred audio language wins over the server's pick (null = upstream)
+    final forkAudio = forkPreferredAudio(this, availableTracks);
+    if (forkAudio != null) return forkAudio;
+
     // Priority 2: Check server-selected track from media info
     final info = plexMediaInfo;
     if (info != null && availableTracks.isNotEmpty) {
@@ -1094,6 +1099,10 @@ class TrackSelectionService {
         }
         appLogger.d('Subtitle intent declined: $intent');
     }
+
+    // FORK: langues-preferees — preferred subtitle language rule before the server's pick (null = upstream)
+    final forkSubtitle = forkPreferredSubtitle(this, availableTracks, selectedAudioTrack);
+    if (forkSubtitle != null) return forkSubtitle;
 
     // Priority 2: Trust the server's selected track. Plex computes this from
     // account/show/per-item prefs; MediaBrowser exposes DefaultSubtitleStreamIndex.

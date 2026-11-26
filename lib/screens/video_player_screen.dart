@@ -75,6 +75,8 @@ import '../services/scoped_player_prefs.dart';
 import '../services/settings_service.dart';
 import '../services/sleep_timer_service.dart';
 import '../services/subtitle_preference.dart';
+import '../fork/preferred_languages.dart'; // FORK: langues-preferees — launch audio intent
+import '../fork/track_choice_memory.dart'; // FORK: langues-preferees — manual pick flag
 import '../services/track_manager.dart';
 import '../services/track_selection_service.dart';
 import '../services/ambient_lighting_service.dart';
@@ -776,6 +778,8 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen>
   /// for this screen, so later episodes and retries honor the pick too.
   bool _qualityPresetExplicit = false;
   int? _selectedAudioStreamId;
+  // FORK: langues-preferees — the launch/reload audio intent was handed to the resolver
+  bool _forkLaunchIntentUsed = false;
   AudioTrack? _preferredAudioTrack;
   SubtitlePreference? _preferredSubtitleTrack;
   SubtitlePreference? _preferredSecondarySubtitleTrack;
@@ -1123,6 +1127,12 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen>
     _requestedMediaSourceId = session.mediaSourceId;
     _selectedQualityPreset = session.qualityPreset;
     _selectedAudioStreamId = session.audioStreamId;
+    // FORK: langues-preferees — a direct-play intent must not come back as a pinned stream id
+    _selectedAudioStreamId = forkAudioStreamIdAfterCommit(
+      sessionAudioStreamId: _selectedAudioStreamId,
+      launchIntentUsed: _forkLaunchIntentUsed,
+      isTranscoding: session.isTranscoding,
+    );
     // Any freshly opened stream ends a dead-stream park (#1520).
     _eofRecovery.clearPark();
     // Every successful open passes through here (never live TV), making it
@@ -1813,30 +1823,51 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen>
           serverManager: context.read<MultiServerProvider>().serverManager,
           database: context.read<AppDatabase>(),
         );
-        _playbackDataFuture = playbackResolver.resolve(
-          PlaybackInitializationOptions(
-            metadata: _currentMetadata,
-            selectedMediaIndex: _effectiveSelectedMediaIndex,
-            selectedMediaSourceId: _requestedMediaSourceId,
-            preferredVersionSignature: widget.preferredVersionSignature,
-            qualityPreset: _selectedQualityPreset,
-            selectedAudioStreamId: _selectedAudioStreamId,
-            preferredAudioTrack: _preferredAudioTrack,
-            preferredSubtitleTrack: _preferredSubtitleTrack,
-            sessionIdentifier: _playbackSessionIdentifier,
-            transcodeSessionId: _playbackTranscodeSessionId,
-            // The same resume the open will land on (see
-            // _resolveOpenResumePosition): a stacked item opens the file
-            // holding it.
-            startPosition: resolveOpenResumePosition(
-              requested: widget.initialPosition,
-              shuffleFromBeginning: widget.initialPosition == null && _opensShuffledFromBeginning(settingsService),
-              viewOffsetMs: _currentMetadata.viewOffsetMs,
-            ),
-          ),
-          offlineLibraryMode: false,
-          downloadOutranksQuality: _downloadOutranksQuality,
+        // FORK: langues-preferees — the profile's audio language as a launch intent (bounded wait for
+        // the profile on a cold start); the options are copied before the wait.
+        final forkAccountPrefs = context.read<AccountPreferencesController>();
+        final forkMetadata = _currentMetadata;
+        final forkMediaIndex = _effectiveSelectedMediaIndex;
+        final forkMediaSourceId = _requestedMediaSourceId;
+        final forkQualityPreset = _selectedQualityPreset;
+        final forkAudioStreamId = _selectedAudioStreamId;
+        final forkPreferredAudio = _preferredAudioTrack;
+        final forkPreferredSubtitle = _preferredSubtitleTrack;
+        final forkSessionIdentifier = _playbackSessionIdentifier;
+        final forkTranscodeSessionId = _playbackTranscodeSessionId;
+        final forkStartPosition = resolveOpenResumePosition(
+          requested: widget.initialPosition,
+          shuffleFromBeginning: widget.initialPosition == null && _opensShuffledFromBeginning(settingsService),
+          viewOffsetMs: _currentMetadata.viewOffsetMs,
         );
+        final forkDownloadOutranksQuality = _downloadOutranksQuality;
+        _playbackDataFuture =
+            (forkPreferredAudio == null && forkAudioStreamId == null
+                    ? forkLaunchAudioIntent(item: forkMetadata, controller: forkAccountPrefs)
+                    : Future<AudioTrack?>.value())
+                .then((forkIntent) {
+                  _forkLaunchIntentUsed = forkIntent != null;
+                  return playbackResolver.resolve(
+                    PlaybackInitializationOptions(
+                      metadata: forkMetadata,
+                      selectedMediaIndex: forkMediaIndex,
+                      selectedMediaSourceId: forkMediaSourceId,
+                      preferredVersionSignature: widget.preferredVersionSignature,
+                      qualityPreset: forkQualityPreset,
+                      selectedAudioStreamId: forkAudioStreamId,
+                      preferredAudioTrack: forkPreferredAudio ?? forkIntent,
+                      preferredSubtitleTrack: forkPreferredSubtitle,
+                      sessionIdentifier: forkSessionIdentifier,
+                      transcodeSessionId: forkTranscodeSessionId,
+                      // The same resume the open will land on (see
+                      // _resolveOpenResumePosition): a stacked item opens the file
+                      // holding it.
+                      startPosition: forkStartPosition,
+                    ),
+                    offlineLibraryMode: false,
+                    downloadOutranksQuality: forkDownloadOutranksQuality,
+                  );
+                });
         // If MPV setup below throws before `_startPlayback` awaits this,
         // tell Dart we've "handled" the future so it's not reported as an
         // unhandled async error. The later `await` still receives the error.
