@@ -1212,20 +1212,20 @@ class Translations$settings$en {
 	/// en: 'Original'
 	String get audioChannelLimitOriginal => 'Original';
 
-	/// en: 'Play every channel in the track'
-	String get audioChannelLimitOriginalDescription => 'Play every channel in the track';
+	/// en: 'Play every channel in the track. At launch, the audio track is not picked by channel count.'
+	String get audioChannelLimitOriginalDescription => 'Play every channel in the track. At launch, the audio track is not picked by channel count.';
 
 	/// en: 'Up to 5.1'
 	String get audioChannelLimitSurround51 => 'Up to 5.1';
 
-	/// en: 'Mix 7.1 down to 5.1 for TVs and receivers that only take 5.1 PCM. Passthrough is unaffected.'
-	String get audioChannelLimitSurround51Description => 'Mix 7.1 down to 5.1 for TVs and receivers that only take 5.1 PCM. Passthrough is unaffected.';
+	/// en: 'At launch, picks the track in your language with the most channels (5.1). Mixes 7.1 down to 5.1 for TVs and receivers that only take 5.1 PCM. Passthrough is unaffected.'
+	String get audioChannelLimitSurround51Description => 'At launch, picks the track in your language with the most channels (5.1). Mixes 7.1 down to 5.1 for TVs and receivers that only take 5.1 PCM. Passthrough is unaffected.';
 
 	/// en: 'Stereo'
 	String get audioChannelLimitStereo => 'Stereo';
 
-	/// en: 'Mix down to two channels for stereo speakers or headphones. Turns passthrough off.'
-	String get audioChannelLimitStereoDescription => 'Mix down to two channels for stereo speakers or headphones. Turns passthrough off.';
+	/// en: 'At launch, picks the stereo track in your language. Mixes down to two channels for TV speakers, stereo speakers or headphones. Turns passthrough off.'
+	String get audioChannelLimitStereoDescription => 'At launch, picks the stereo track in your language. Mixes down to two channels for TV speakers, stereo speakers or headphones. Turns passthrough off.';
 
 	/// en: 'Center Channel Boost'
 	String get downmixCenterBoost => 'Center Channel Boost';
@@ -3205,8 +3205,8 @@ class Translations$accountPreferences$en {
 	/// en: 'Choose audio by language'
 	String get autoSelectAudio => 'Choose audio by language';
 
-	/// en: 'Off keeps whatever audio track the file marks as default.'
-	String get autoSelectAudioDescription => 'Off keeps whatever audio track the file marks as default.';
+	/// en: 'On: picks the audio track in your preferred language whenever the file has one. Off: keeps the track the file marks as default.'
+	String get autoSelectAudioDescription => 'On: picks the audio track in your preferred language whenever the file has one. Off: keeps the track the file marks as default.';
 
 	/// en: 'Preferred subtitle language'
 	String get preferredSubtitleLanguage => 'Preferred subtitle language';
@@ -8553,11 +8553,11 @@ extension on Translations {
 			'settings.audioChannelLimit' => 'Audio Channels',
 			'settings.audioChannelLimitDescription' => 'Mix decoded audio down for speakers, headphones, or HDMI setups that cannot play every channel',
 			'settings.audioChannelLimitOriginal' => 'Original',
-			'settings.audioChannelLimitOriginalDescription' => 'Play every channel in the track',
+			'settings.audioChannelLimitOriginalDescription' => 'Play every channel in the track. At launch, the audio track is not picked by channel count.',
 			'settings.audioChannelLimitSurround51' => 'Up to 5.1',
-			'settings.audioChannelLimitSurround51Description' => 'Mix 7.1 down to 5.1 for TVs and receivers that only take 5.1 PCM. Passthrough is unaffected.',
+			'settings.audioChannelLimitSurround51Description' => 'At launch, picks the track in your language with the most channels (5.1). Mixes 7.1 down to 5.1 for TVs and receivers that only take 5.1 PCM. Passthrough is unaffected.',
 			'settings.audioChannelLimitStereo' => 'Stereo',
-			'settings.audioChannelLimitStereoDescription' => 'Mix down to two channels for stereo speakers or headphones. Turns passthrough off.',
+			'settings.audioChannelLimitStereoDescription' => 'At launch, picks the stereo track in your language. Mixes down to two channels for TV speakers, stereo speakers or headphones. Turns passthrough off.',
 			'settings.downmixCenterBoost' => 'Center Channel Boost',
 			'settings.downmixCenterBoostValue' => ({required Object db}) => '${db} dB',
 			'settings.downmixCenterBoostLabel' => 'Boost (dB)',
@@ -9212,7 +9212,7 @@ extension on Translations {
 			'accountPreferences.groups.personalMedia' => 'Personal media',
 			'accountPreferences.preferredAudioLanguage' => 'Preferred audio language',
 			'accountPreferences.autoSelectAudio' => 'Choose audio by language',
-			'accountPreferences.autoSelectAudioDescription' => 'Off keeps whatever audio track the file marks as default.',
+			'accountPreferences.autoSelectAudioDescription' => 'On: picks the audio track in your preferred language whenever the file has one. Off: keeps the track the file marks as default.',
 			'accountPreferences.preferredSubtitleLanguage' => 'Preferred subtitle language',
 			'accountPreferences.subtitleMode' => 'Turn subtitles on',
 			'accountPreferences.subtitleModes.none' => 'Manually selected',

@@ -1,5 +1,5 @@
 {
-  "_comment": "Rules used by scripts/fork/rebrand_i18n.py. Applied to values only, never to keys, outside the 'fork' branch. Per-language rules are applied longest 'from' first, then the general rule, then the per-key rules.",
+  "_comment": "Rules used by scripts/fork/rebrand_i18n.py. Applied to values only, never to keys, outside the 'fork' branch. Per-language rules are applied longest 'from' first, then the general rule, then the per-key rules. The overlays may also override existing upstream keys when only the wording changes (e.g. accountPreferences.autoSelectAudioDescription).",
   "general": {
     "from": "Plezy",
     "to": "Popkino"

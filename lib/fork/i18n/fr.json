@@ -1,4 +1,7 @@
 {
+  "accountPreferences": {
+    "autoSelectAudioDescription": "Activé : la piste audio dans votre langue préférée est choisie dès que le fichier en contient une. Désactivé : la piste marquée par défaut dans le fichier est conservée."
+  },
   "fork": {
     "about": {
       "basedOn": "Basé sur Plezy. Popkino est un projet indépendant, ni développé ni soutenu par le projet Plezy.",
@@ -6,5 +9,10 @@
       "sourceCode": "Code source",
       "sourceCodeQrHint": "Scannez ce code avec votre téléphone pour ouvrir l'adresse"
     }
+  },
+  "settings": {
+    "audioChannelLimitOriginalDescription": "Lire tous les canaux de la piste. Au lancement, la piste audio n’est pas choisie selon son nombre de canaux.",
+    "audioChannelLimitSurround51Description": "Au lancement, choisit la piste de votre langue qui a le plus de canaux (5.1). Convertit le 7.1 en 5.1 pour les téléviseurs et amplis qui n’acceptent que le PCM 5.1. La transmission directe n’est pas affectée.",
+    "audioChannelLimitStereoDescription": "Au lancement, choisit la piste stéréo de votre langue. Convertit en deux canaux pour les haut-parleurs du téléviseur, des enceintes stéréo ou un casque. Désactive la transmission directe."
   }
 }
