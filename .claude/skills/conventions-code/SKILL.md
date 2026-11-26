@@ -83,7 +83,10 @@ flutter build apk --release --split-per-abi --dart-define=ENABLE_UPDATE_CHECK=tr
 adb install -r build/app/outputs/flutter-apk/app-arm64-v8a-release.apk
 ```
 
-La signature de release lit `android/key.properties`. Sans ce fichier, l'APK est signé avec la clé de debug.
+La signature de release lit `android/key.properties`. Sans ce fichier, l'APK release n'est **pas signé** et ne s'installe
+pas (`INSTALL_PARSE_FAILED_NO_CERTIFICATES`). Pour un APK de test, signe-le ensuite avec la clé de debug :
+`$(ls -d ~/Library/Android/sdk/build-tools/* | tail -1)/apksigner sign --ks ~/.android/debug.keystore --ks-pass pass:android --ks-key-alias androiddebugkey <apk>`.
+Fire TV Stick de l'utilisateur (`AFTMA08C15`, Fire OS / Android 11, 192.168.1.173:5555 en adb) : ABI `armeabi-v7a` uniquement.
 **Ne jamais commiter** `key.properties` ni le keystore.
 
 ## Style
