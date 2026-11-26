@@ -65,6 +65,9 @@ l'app partout et la réinstaller.
 
    Copie la ligne `SHA256: …` : elle ira dans le README (tâche T16) pour que chacun puisse vérifier l'APK.
 
+   **Fait le 2026-11-26.** Empreinte obtenue (publique) :
+   `9F:6F:21:45:72:D5:5E:87:F4:AE:6D:C1:34:C7:F4:AA:DF:47:9A:15:99:8E:A2:79:55:D4:0E:B5:BA:C3:46:24`
+
 3. Range la clé dans les secrets du dépôt (chaque commande `gh secret set` sans `--body` te demande la valeur) :
 
    ```bash
@@ -115,6 +118,8 @@ toutes les mises à jour suivantes.** À faire après la fusion de la tâche T1 
    ```bash
    cat ~/popkino-secrets/ed25519_pub.txt
    ```
+
+   **Fait le 2026-11-26.** Clé publique obtenue : `8NfzNIZD2KKhYadbFW2hU7ZaZxybnlsi95v3nozYCaI=`
 
 4. **Sauvegarde** `ed25519_key.pem` comme la clé Android (gestionnaire de mots de passe + support chiffré).
 
