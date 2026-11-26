@@ -53,6 +53,7 @@ appareil. Le jour où il voudra passer sur un store, il n'y aura plus rien à ch
   gratuite enregistrée par l'utilisateur au nom de Popkino, et non plus celle de Plezy. Pour les trois, la connexion se
   fait par un code à saisir sur le site du service : **elle ne passe par aucun serveur intermédiaire**, il n'y a donc
   rien à héberger ni à payer.
+  **Mise à jour (2026-11-26, voir P8)** : les trois services sont reportés ; la 1.0.0 sort sans Trakt, Simkl ni MDBList.
 - **Signature** : pas de compte développeur payant pour l'instant. Les avertissements de sécurité à l'installation sur
   Mac, Windows et iPhone sont acceptés et expliqués dans le README.
 - **Mises à jour sur ordinateur** : mise à jour automatique sur Windows et Mac, comme Plezy, avec un flux de mises à
@@ -74,11 +75,11 @@ appareil. Le jour où il voudra passer sur un store, il n'y aura plus rien à ch
    première entrée sélectionnable ; Retour ramène aux Paramètres, sur l'entrée « À propos ».
 4. Dans Paramètres, il ne trouve plus ni « Soutenir Plezy », ni les icônes alternatives, ni MyAnimeList, AniList,
    Discord, ni « Envoyer les journaux ».
-4b. Dans Paramètres > Services, il sélectionne Trakt (ou Simkl, ou MDBList) au D-pad, OK, puis « Se connecter » :
+4b. **[Reporté — voir P8]** Dans Paramètres > Services, il sélectionne Trakt (ou Simkl, ou MDBList) au D-pad, OK, puis « Se connecter » :
    l'écran affiche un code et l'adresse du site du service (par exemple trakt.tv/activate). Sur son téléphone ou son
    ordinateur, il ouvre cette adresse, saisit le code et voit « Popkino » demander l'accès à son compte ; il accepte.
    Sur la TV, l'écran du service passe tout seul à « Connecté » et le focus reste dans cet écran.
-4c. Avec MDBList connecté, il ouvre la fiche d'un film : les notes Rotten Tomatoes, IMDb, Metacritic… s'affichent
+4c. **[Reporté — voir P8]** Avec MDBList connecté, il ouvre la fiche d'un film : les notes Rotten Tomatoes, IMDb, Metacritic… s'affichent
    comme dans Plezy aujourd'hui.
 5. Sur son ordinateur, il ouvre son dépôt GitHub : il s'appelle Popkino, le README présente Popkino, et chaque release
    propose des fichiers nommés `popkino-…` pour chaque plateforme. Il installe la version Windows, Mac ou Linux : le
@@ -140,33 +141,39 @@ Services du projet Plezy
   (préréglés et personnalisés) sont utilisables sans achat ; aucun cadenas, prix, « Pack de thèmes et d'icônes » ni
   bouton d'achat n'apparaît, nulle part dans l'app.
 - CA19 : Étant donné l'écran Paramètres > Services, alors MyAnimeList, AniList et Discord n'y apparaissent pas, sur
-  aucune plateforme. Trakt, Simkl, MDBList et les autres réglages de cet écran (par exemple Seerr) restent présents et
-  fonctionnent.
+  aucune plateforme. Les autres réglages de cet écran (par exemple Seerr) restent présents et fonctionnent.
+  Pour la 1.0.0, Trakt, Simkl et MDBList n'y apparaissent pas non plus (P8, vérifié par CA19f) ; la phrase d'origine
+  « Trakt, Simkl, MDBList […] restent présents et fonctionnent » est reportée avec eux.
 
 Trakt, Simkl et MDBList (chaque critère s'applique aux trois services, sauf mention contraire)
-- CA19b : Étant donné l'écran Paramètres > Services > [service], quand on lance la connexion, alors un code et
+Pour la 1.0.0, CA19b, CA19c, CA19d, CA19e, CA19g, CA19h et CA19i sont **reportés** (P8) : ils ne bloquent pas la
+recette et seront vérifiés à la réactivation des services (backlog `services-suivi`). CA19f reste à vérifier : c'est
+lui qui décrit le comportement attendu de la 1.0.0 (les trois services absents).
+- CA19b : **[Reporté — voir P8]**  Étant donné l'écran Paramètres > Services > [service], quand on lance la connexion, alors un code et
   l'adresse du site du service s'affichent ; après saisie du code sur ce site, la page d'autorisation présente
   l'application sous le nom « Popkino » (jamais « Plezy »), et l'écran de l'app passe à « Connecté » sans autre action à
   la télécommande.
-- CA19c (Trakt et Simkl) : Étant donné un compte connecté, quand on regarde un film ou un épisode (Plex et Jellyfin),
+- CA19c (Trakt et Simkl) : **[Reporté — voir P8]**  Étant donné un compte connecté, quand on regarde un film ou un épisode (Plex et Jellyfin),
   alors la lecture remonte sur le service (en cours puis historique) comme avec Plezy aujourd'hui ; et quand on marque
   un élément « vu » dans Popkino avec la synchronisation « vu » activée, alors il est marqué vu sur le service.
-- CA19d : Étant donné un compte connecté, quand on ouvre la liste des applications autorisées dans son compte sur le
+- CA19d : **[Reporté — voir P8]**  Étant donné un compte connecté, quand on ouvre la liste des applications autorisées dans son compte sur le
   site du service, alors l'accès apparaît au nom de Popkino ; quand on se déconnecte dans Popkino, alors l'app cesse
   d'envoyer des informations à ce service.
-- CA19e : Étant donné l'écran de connexion d'un service, quand le code expire ou qu'il n'y a pas de réseau, alors un
+- CA19e : **[Reporté — voir P8]**  Étant donné l'écran de connexion d'un service, quand le code expire ou qu'il n'y a pas de réseau, alors un
   message d'erreur clair s'affiche, la connexion peut être relancée, et le focus reste utilisable.
 - CA19f : Étant donné une version de Popkino fabriquée sans les identifiants d'un service (par exemple par un tiers à
   partir du code public, ou si l'utilisateur n'a pas encore créé l'application de ce service), alors l'entrée de ce
   service n'apparaît pas dans Paramètres > Services, ses notes et listes n'apparaissent nulle part, les autres services
   configurés fonctionnent normalement, et l'app n'utilise jamais les identifiants de Plezy.
-- CA19g (MDBList) : Étant donné un compte MDBList connecté, quand on ouvre la fiche d'un film ou d'une série connu de
+  Pour la 1.0.0 (P8) : Trakt, Simkl et MDBList sont tous trois absents de Paramètres > Services, aucune note MDBList
+  n'apparaît sur les fiches, et aucune erreur ne s'affiche à leur sujet.
+- CA19g (MDBList) : **[Reporté — voir P8]**  Étant donné un compte MDBList connecté, quand on ouvre la fiche d'un film ou d'une série connu de
   MDBList, alors les notes communautaires (Rotten Tomatoes critiques et public, IMDb, TMDB, Metacritic, Letterboxd,
   selon ce que MDBList fournit pour ce titre) s'affichent comme dans Plezy aujourd'hui. Sans compte MDBList connecté,
   seules les notes fournies par le serveur Plex/Jellyfin s'affichent, sans message d'erreur.
-- CA19h (Simkl) : Étant donné un compte Simkl connecté et ni MyAnimeList ni AniList (retirés), quand on regarde un
+- CA19h (Simkl) : **[Reporté — voir P8]**  Étant donné un compte Simkl connecté et ni MyAnimeList ni AniList (retirés), quand on regarde un
   anime, alors la lecture remonte sur Simkl si Simkl reconnaît le titre ; aucune erreur n'est affichée sinon.
-- CA19i : Étant donné l'app utilisée par quelqu'un qui avait connecté Trakt, Simkl ou MDBList dans Plezy, alors
+- CA19i : **[Reporté — voir P8]**  Étant donné l'app utilisée par quelqu'un qui avait connecté Trakt, Simkl ou MDBList dans Plezy, alors
   Popkino ne reprend pas ces connexions : il faut se reconnecter une fois dans Popkino.
 - CA20 : Étant donné l'écran Paramètres > Journaux, alors on peut toujours voir, copier et effacer les journaux, et le
   bouton « Envoyer les journaux » n'apparaît pas.
@@ -285,14 +292,14 @@ Aucune.
 ### Actions manuelles qui restent à l'utilisateur
 
 - Renommer le dépôt GitHub `adrien24/plezy` en `popkino` (et sa description).
-- Créer trois applications gratuites nommées « Popkino », chacune en mode « connexion par code » (device code), avec
+- **[Reporté — voir P8]** Créer trois applications gratuites nommées « Popkino », chacune en mode « connexion par code » (device code), avec
   un compte (gratuit) sur chaque service : Trakt (page « Your API Apps » de trakt.tv), Simkl (espace développeur de
   simkl.com) et MDBList (page développeur de mdblist.com). Ranger ensuite leurs identifiants (et le code secret Trakt)
   dans les réglages secrets du dépôt. Environ 10 minutes par service, une seule fois ; aucun serveur à héberger, aucun
   coût, aucune maintenance courante. Un service non créé est simplement absent de l'app (CA19f).
 - Créer et sauvegarder hors de GitHub la clé de signature Android et la clé de mise à jour Windows/Mac, puis les
   déposer dans les réglages secrets du dépôt.
-- Tester à la main ce qui ne peut pas l'être automatiquement : connexion aux trois services (CA19b à CA19g), Fire TV (CA3), iPhone (CA7), mise à jour automatique
+- Tester à la main ce qui ne peut pas l'être automatiquement : connexion aux trois services (CA19b à CA19i, reportés, P8), Fire TV (CA3), iPhone (CA7), mise à jour automatique
   Mac et Windows (CA22b, CA22c), avertissements de sécurité (CA27).
 - Avant `publication-stores` : revérifier le nom « Popkino » sur l'Amazon Appstore, faire une recherche dans les bases
   de marques (INPI, EUIPO), et faire réaliser le logo définitif.
@@ -346,6 +353,14 @@ au nom des décisions déjà validées. Elles précisent la spec sans en changer
   - Éditeur affiché (Windows « Applications installées », informations Mac et Linux, mention de copyright) :
     `adrien24`.
   - Issues GitHub activées sur le dépôt `popkino`, pour recevoir les signalements des utilisateurs des releases.
+- **P8 — Trakt, Simkl et MDBList reportés (décision de l'utilisateur, 2026-11-26)** : « on va mettre de côté pour le
+  moment car trop compliqué de les intégrer ». Pendant l'action manuelle A4, le compte Simkl n'a pas pu être créé, et
+  l'application Trakt a été créée dans un mode qui ne fournit pas de code secret, alors que la connexion par code de
+  Popkino en exige un. La release 1.0.0 sort donc **sans Trakt, Simkl ni MDBList** : ces trois services sont absents de
+  Paramètres > Services et des fiches (comportement de CA19f, sans changement de l'app). Critères reportés, conservés
+  pour la réactivation : CA19b, CA19c, CA19d, CA19e, CA19g, CA19h, CA19i, ainsi que la partie « Trakt, Simkl, MDBList
+  restent présents » de CA19 et les étapes 4b et 4c du parcours. La réactivation est suivie au backlog
+  (`services-suivi`).
 
 ## Annexe : inventaire de ce qui porte l'identité Plezy aujourd'hui
 
@@ -365,7 +380,7 @@ au nom des décisions déjà validées. Elles précisent la spec sans en changer
 | Jellyfin / Emby (tableau de bord) | Client nommé « Plezy » | Popkino |
 | Regarder ensemble | Nom par défaut « Plezy », message d'invitation « …dans Plezy » | Popkino |
 | Liens d'ouverture de l'app et retour du lecteur externe | Préfixe `plezy://` | Préfixe propre à Popkino |
-| Trakt, Simkl, MDBList (dont notes communautaires via MDBList) | Applications enregistrées au nom de Plezy (connexion par code, sans serveur) ; Simkl se présente comme « plezy » | Gardés, avec les applications « Popkino » de l'utilisateur |
+| Trakt, Simkl, MDBList (dont notes communautaires via MDBList) | Applications enregistrées au nom de Plezy (connexion par code, sans serveur) ; Simkl se présente comme « plezy » | Gardés, avec les applications « Popkino » de l'utilisateur ; absents de la 1.0.0 (reportés, P8) |
 | MyAnimeList, AniList | Enregistrés au nom de Plezy, connexion via `ice.plezy.app` | Retirés |
 | Paramètres > Journaux > Envoyer | Envoi vers `ice.plezy.app` | Retiré |
 | Discord (ordinateur) | Application Discord de Plezy, images via `ice.plezy.app` | Retiré |

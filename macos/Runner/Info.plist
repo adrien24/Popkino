@@ -63,7 +63,8 @@
 	<false/>
 	<key>SUFeedURL</key>
 	<string>https://cdn.jsdelivr.net/gh/adrien24/popkino@appcast/appcast.xml</string>
+	<!-- FORK: Popkino Ed25519 update public key (replaces the Plezy one) -->
 	<key>SUPublicEDKey</key>
-	<string>q7t6eu1txRrqv1PeWDCRV95rFxnmD/D3GZWbUPMwUyU=</string>
+	<string>8NfzNIZD2KKhYadbFW2hU7ZaZxybnlsi95v3nozYCaI=</string>
 </dict>
 </plist>
