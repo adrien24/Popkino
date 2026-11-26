@@ -112,3 +112,16 @@ existante** quand seul le texte change (premier cas : `accountPreferences.autoSe
 signalée dans le `_comment` de `lib/fork/i18n/rebrand_rules.json`. Les langues non surchargées gardent le texte upstream.
 Conséquences : aucun changement Dart pour un correctif de libellé ; à la fusion, relire les clés surchargées si
 l'upstream change leur sens.
+
+## D12 — Règles de choix de pistes du fork (2026-11-26)
+Contexte : `langues-preferees`, `meilleure-piste-audio` et `sous-titres-mal-etiquetes` empilent des règles sur le même
+choix automatique ; une mesure sur la Fire Stick (TV LG seule annonçant 8 canaux, Dolby, DTS) montre que la sortie
+audio réelle n'est pas détectable.
+Décision : toutes les règles de choix automatique de pistes du fork vivent dans `lib/fork/preferred_languages.dart`
+(et ses fichiers d'aide dans `lib/fork/`), derrière les crochets de D11, sans nouvelle ligne upstream. Elles s'appuient
+sur des réglages existants (« Canaux audio », préférences du compte) plutôt que sur une détection matérielle ou un
+nouveau réglage, se taisent (`null`) quand une information manque, et ne lisent que les métadonnées de l'auteur du
+fichier (`title` de la ligne serveur ou du conteneur), jamais les libellés calculés par le serveur (`displayTitle`,
+`extendedDisplayTitle`).
+Conséquences : un nouveau besoin de choix de piste s'ajoute à ce fichier ; une détection de l'installation audio
+(par exemple PCM 5.1 via `AudioTrack.isDirectPlaybackSupported`) serait une fonctionnalité à part, testée sur matériel.

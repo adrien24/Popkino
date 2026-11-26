@@ -515,11 +515,11 @@ class _Translations$settings$fr extends Translations$settings$en {
 	@override String get audioChannelLimit => 'Canaux audio';
 	@override String get audioChannelLimitDescription => 'Réduire le nombre de canaux de l’audio décodé pour les enceintes, casques ou installations HDMI qui ne peuvent pas restituer tous les canaux';
 	@override String get audioChannelLimitOriginal => 'D’origine';
-	@override String get audioChannelLimitOriginalDescription => 'Lire tous les canaux de la piste';
+	@override String get audioChannelLimitOriginalDescription => 'Lire tous les canaux de la piste. Au lancement, la piste audio n’est pas choisie selon son nombre de canaux.';
 	@override String get audioChannelLimitSurround51 => 'Jusqu’à 5.1';
-	@override String get audioChannelLimitSurround51Description => 'Convertir le 7.1 en 5.1 pour les téléviseurs et amplis qui n’acceptent que le PCM 5.1. La transmission directe n’est pas affectée.';
+	@override String get audioChannelLimitSurround51Description => 'Au lancement, choisit la piste de votre langue qui a le plus de canaux (5.1). Convertit le 7.1 en 5.1 pour les téléviseurs et amplis qui n’acceptent que le PCM 5.1. La transmission directe n’est pas affectée.';
 	@override String get audioChannelLimitStereo => 'Stéréo';
-	@override String get audioChannelLimitStereoDescription => 'Convertir en deux canaux pour des enceintes stéréo ou un casque. Désactive la transmission directe.';
+	@override String get audioChannelLimitStereoDescription => 'Au lancement, choisit la piste stéréo de votre langue. Convertit en deux canaux pour les haut-parleurs du téléviseur, des enceintes stéréo ou un casque. Désactive la transmission directe.';
 	@override String get downmixCenterBoost => 'Renforcement du canal central';
 	@override String downmixCenterBoostValue({required Object db}) => '${db} dB';
 	@override String get downmixCenterBoostLabel => 'Renforcement (dB)';
@@ -3821,11 +3821,11 @@ extension on TranslationsFr {
 			'settings.audioChannelLimit' => 'Canaux audio',
 			'settings.audioChannelLimitDescription' => 'Réduire le nombre de canaux de l’audio décodé pour les enceintes, casques ou installations HDMI qui ne peuvent pas restituer tous les canaux',
 			'settings.audioChannelLimitOriginal' => 'D’origine',
-			'settings.audioChannelLimitOriginalDescription' => 'Lire tous les canaux de la piste',
+			'settings.audioChannelLimitOriginalDescription' => 'Lire tous les canaux de la piste. Au lancement, la piste audio n’est pas choisie selon son nombre de canaux.',
 			'settings.audioChannelLimitSurround51' => 'Jusqu’à 5.1',
-			'settings.audioChannelLimitSurround51Description' => 'Convertir le 7.1 en 5.1 pour les téléviseurs et amplis qui n’acceptent que le PCM 5.1. La transmission directe n’est pas affectée.',
+			'settings.audioChannelLimitSurround51Description' => 'Au lancement, choisit la piste de votre langue qui a le plus de canaux (5.1). Convertit le 7.1 en 5.1 pour les téléviseurs et amplis qui n’acceptent que le PCM 5.1. La transmission directe n’est pas affectée.',
 			'settings.audioChannelLimitStereo' => 'Stéréo',
-			'settings.audioChannelLimitStereoDescription' => 'Convertir en deux canaux pour des enceintes stéréo ou un casque. Désactive la transmission directe.',
+			'settings.audioChannelLimitStereoDescription' => 'Au lancement, choisit la piste stéréo de votre langue. Convertit en deux canaux pour les haut-parleurs du téléviseur, des enceintes stéréo ou un casque. Désactive la transmission directe.',
 			'settings.downmixCenterBoost' => 'Renforcement du canal central',
 			'settings.downmixCenterBoostValue' => ({required Object db}) => '${db} dB',
 			'settings.downmixCenterBoostLabel' => 'Renforcement (dB)',

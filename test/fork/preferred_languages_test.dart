@@ -1,5 +1,7 @@
 // FORK: langues-preferees — unit tests of the "preferred language first" rule
+// FORK: meilleure-piste-audio — and of the channel rule among the tracks of the preferred language
 import 'package:flutter_test/flutter_test.dart';
+import 'package:plezy/fork/audio_output.dart';
 import 'package:plezy/fork/preferred_languages.dart';
 import 'package:plezy/fork/track_choice_memory.dart';
 import 'package:plezy/media/media_backend.dart';
@@ -159,6 +161,152 @@ void main() {
     test('Plex: DefaultAudioStreamIndex is ignored', () {
       final info = _info([_row(1, 'eng', index: 1), _row(2, 'fra', index: 2)], defaultAudioStreamIndex: 1);
       expect(forkPreferredAudio(_service(profile: _Profile(), info: info), [_en, _fr])?.track, _en);
+    });
+  });
+
+  group('channel rule (meilleure-piste-audio)', () {
+    Future<void> setOutput(AudioChannelLimit limit) async {
+      final settings = await SettingsService.getInstance();
+      await settings.write(SettingsService.audioChannelLimit, limit);
+    }
+
+    // S3E8: EN 2.0 AAC, FR 2.0, EN EAC3 5.1 (titled), FR 5.1.
+    const s3En20 = AudioTrack(id: '1', language: 'eng', codec: 'aac', channels: 2);
+    const s3Fr20 = AudioTrack(id: '2', language: 'fra', codec: 'aac', channels: 2);
+    const s3En51 = AudioTrack(id: '3', language: 'eng', codec: 'eac3', channels: 6, title: 'ENG VO - EAC3 DDP 5.1');
+    const s3Fr51 = AudioTrack(id: '4', language: 'fra', codec: 'eac3', channels: 6);
+    final s3 = [s3En20, s3Fr20, s3En51, s3Fr51];
+
+    // Green Lantern: EN 2.0, FR 2.0, EN DTS 5.1, FR AC3 5.1.
+    const glEn20 = AudioTrack(id: '1', language: 'eng', codec: 'aac', channels: 2);
+    const glFr20 = AudioTrack(id: '2', language: 'fra', codec: 'aac', channels: 2);
+    const glEn51 = AudioTrack(id: '3', language: 'eng', codec: 'dts', channels: 6);
+    const glFr51 = AudioTrack(id: '4', language: 'fra', codec: 'ac3', channels: 6);
+    final greenLantern = [glEn20, glFr20, glEn51, glFr51];
+
+    // The server marked the first English track (the stereo one) as selected.
+    MediaSourceInfo serverOnEn20() =>
+        _info([_row(1, 'eng', selected: true), _row(2, 'fra'), _row(3, 'eng'), _row(4, 'fra')]);
+
+    for (final (name, tracks, en20, en51) in [
+      ('S3E8', s3, s3En20, s3En51),
+      ('Green Lantern', greenLantern, glEn20, glEn51),
+    ]) {
+      group(name, () {
+        test('stereo picks English 2.0', () async {
+          await setOutput(AudioChannelLimit.stereo);
+          final result = forkPreferredAudio(_service(profile: _Profile(), info: serverOnEn20()), tracks);
+          expect(result?.track, en20);
+          expect(result?.priority, TrackSelectionPriority.profile);
+        });
+
+        test('multichannel picks English 5.1 even when the server chose English 2.0 (A2 relaxed)', () async {
+          await setOutput(AudioChannelLimit.surround51);
+          final result = forkPreferredAudio(_service(profile: _Profile(), info: serverOnEn20()), tracks);
+          expect(result?.track, en51);
+          expect(result?.priority, TrackSelectionPriority.profile);
+        });
+
+        test('unknown keeps today\'s choice (A2: server already on English)', () async {
+          await setOutput(AudioChannelLimit.original);
+          expect(forkPreferredAudio(_service(profile: _Profile(), info: serverOnEn20()), tracks), isNull);
+        });
+
+        test('unknown keeps today\'s choice (server on French: first English track)', () async {
+          await setOutput(AudioChannelLimit.original);
+          final info = _info([_row(1, 'eng'), _row(2, 'fra', selected: true), _row(3, 'eng'), _row(4, 'fra')]);
+          expect(forkPreferredAudio(_service(profile: _Profile(), info: info), tracks)?.track, en20);
+        });
+      });
+    }
+
+    test('only the 5.1 track reports its channels: the rule says nothing', () async {
+      const unknown20 = AudioTrack(id: '1', language: 'eng');
+      const known51 = AudioTrack(id: '3', language: 'eng', channels: 6);
+      final service = _service(profile: _Profile(), info: _info([_row(2, 'fra', selected: true)]));
+      await setOutput(AudioChannelLimit.stereo);
+      expect(forkBestTrackForOutput(const [unknown20, known51], ForkAudioOutput.stereo), isNull);
+      // Current order: the first English track.
+      expect(forkPreferredAudio(service, [_fr, unknown20, known51])?.track, unknown20);
+      await setOutput(AudioChannelLimit.surround51);
+      expect(forkBestTrackForOutput(const [unknown20, known51], ForkAudioOutput.multichannel), isNull);
+      expect(forkPreferredAudio(service, [_fr, unknown20, known51])?.track, unknown20);
+    });
+
+    test('CA5: two English 5.1 tracks, the rule says nothing', () {
+      const a = AudioTrack(id: '1', language: 'eng', channels: 6);
+      const b = AudioTrack(id: '2', language: 'eng', channels: 6);
+      expect(forkBestTrackForOutput(const [a, b], ForkAudioOutput.stereo), isNull);
+      expect(forkBestTrackForOutput(const [a, b], ForkAudioOutput.multichannel), isNull);
+    });
+
+    test('CA4: a single English track, the rule says nothing', () {
+      const a = AudioTrack(id: '1', language: 'eng', channels: 6);
+      expect(forkBestTrackForOutput(const [a], ForkAudioOutput.stereo), isNull);
+      expect(forkBestTrackForOutput(const [a], ForkAudioOutput.multichannel), isNull);
+      expect(forkBestTrackForOutput(const [], ForkAudioOutput.multichannel), isNull);
+    });
+
+    test('stereo output with no stereo track: the rule says nothing', () {
+      const a = AudioTrack(id: '1', language: 'eng', channels: 6);
+      const b = AudioTrack(id: '2', language: 'eng', channels: 8);
+      expect(forkBestTrackForOutput(const [a, b], ForkAudioOutput.stereo), isNull);
+    });
+
+    test('multichannel takes the most channels, then isDefault, then the first', () {
+      const stereo = AudioTrack(id: '1', language: 'eng', channels: 2);
+      const six = AudioTrack(id: '2', language: 'eng', channels: 6);
+      const eight = AudioTrack(id: '3', language: 'eng', channels: 8);
+      const eightDefault = AudioTrack(id: '4', language: 'eng', channels: 8, isDefault: true);
+      expect(forkBestTrackForOutput(const [stereo, six, eight], ForkAudioOutput.multichannel), eight);
+      expect(forkBestTrackForOutput(const [stereo, eight, eightDefault], ForkAudioOutput.multichannel), eightDefault);
+    });
+
+    test('stereo takes isDefault among the stereo tracks, then the first', () {
+      const first = AudioTrack(id: '1', language: 'eng', channels: 2);
+      const second = AudioTrack(id: '2', language: 'eng', channels: 2, isDefault: true);
+      const six = AudioTrack(id: '3', language: 'eng', channels: 6);
+      expect(forkBestTrackForOutput(const [first, second, six], ForkAudioOutput.stereo), second);
+      expect(forkBestTrackForOutput([first, second.copyWith(isDefault: false), six], ForkAudioOutput.stereo), first);
+    });
+
+    test('CA11: a commentary track is never chosen by the rule', () {
+      const surround = AudioTrack(id: '1', language: 'eng', channels: 6, title: 'English 5.1');
+      const commentary = AudioTrack(id: '2', language: 'eng', channels: 2, title: 'English 2.0 Commentary');
+      expect(forkBestTrackForOutput(const [surround, commentary], ForkAudioOutput.stereo), isNull);
+      expect(forkBestTrackForOutput(const [surround, commentary], ForkAudioOutput.multichannel), isNull);
+    });
+
+    test('CA11: an audio description track is never chosen by the rule', () {
+      const description = AudioTrack(id: '1', language: 'eng', channels: 6, title: 'Audio Description');
+      const stereo = AudioTrack(id: '2', language: 'eng', channels: 2, title: 'English 2.0');
+      expect(forkBestTrackForOutput(const [description, stereo], ForkAudioOutput.multichannel), isNull);
+      expect(forkBestTrackForOutput(const [description, stereo], ForkAudioOutput.stereo), isNull);
+    });
+
+    test('CA6: a manual pick leaves the server in charge whatever the output', () async {
+      await SettingsService.getInstance();
+      final service = _service(profile: _Profile(), info: serverOnEn20());
+      await ForkTrackChoiceMemory.recordManualPick(service.metadata, ForkTrackKind.audio);
+      for (final limit in AudioChannelLimit.values) {
+        await setOutput(limit);
+        expect(forkPreferredAudio(service, s3), isNull, reason: '$limit');
+      }
+    });
+
+    test('CA8: choosing audio by language off gives null whatever the output', () async {
+      await setOutput(AudioChannelLimit.surround51);
+      final service = _service(profile: _Profile(auto: false), info: serverOnEn20());
+      expect(forkPreferredAudio(service, s3), isNull);
+    });
+
+    test('forkIsSpecialAudioTrack matches whole words only', () {
+      for (final title in ["Director's Commentary", 'Commentaire audio', 'AD', 'Audiodescription']) {
+        expect(forkIsSpecialAudioTrack(title), isTrue, reason: title);
+      }
+      for (final title in ['ENG VO - EAC3 DDP 5.1', 'Adventure', 'Headphones', '', null]) {
+        expect(forkIsSpecialAudioTrack(title), isFalse, reason: '$title');
+      }
     });
   });
 

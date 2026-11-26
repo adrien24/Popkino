@@ -1,4 +1,5 @@
 // FORK: langues-preferees — "preferred language first" rule for the track selection ladder.
+// FORK: meilleure-piste-audio — channel rule among the tracks of that language.
 //
 // Both functions return null when the rule has nothing to say, in which case
 // the upstream ladder applies untouched. See
@@ -14,6 +15,7 @@ import '../services/playback_subtitle_resolver.dart';
 import '../services/track_selection_service.dart';
 import '../utils/app_logger.dart';
 import '../utils/subtitle_forced_semantics.dart';
+import 'audio_output.dart';
 import 'track_choice_memory.dart';
 
 /// The profile when the rule may act at all (conditions shared by audio and
@@ -46,26 +48,85 @@ MediaAudioTrack? _serverAudioRow(TrackSelectionService service) {
   return null;
 }
 
-/// Audio rule: the track in the profile's preferred language, unless the
-/// server already chose that language (A2), the user picked by hand (A3), or
-/// the file has no such track (A4).
+/// Words that mark a commentary or audio-description track in its title.
+const Set<String> _specialAudioWords = {
+  'commentary',
+  'commentaries',
+  'commentaire',
+  'commentaires',
+  'description',
+  'audiodescription',
+  'descriptive',
+  'ad',
+  'dvs',
+};
+
+final RegExp _nonLetters = RegExp(r'[^\p{L}]+', unicode: true);
+
+/// Whether [title] says the track is a commentary or an audio description: a
+/// whole word of the lowercased title (split on anything that is not a letter)
+/// is one of [_specialAudioWords]. Such tracks never take part in the channel
+/// rule (meilleure-piste-audio, CA11).
+bool forkIsSpecialAudioTrack(String? title) {
+  if (title == null || title.isEmpty) return false;
+  return title.toLowerCase().split(_nonLetters).any(_specialAudioWords.contains);
+}
+
+/// Channel rule (meilleure-piste-audio): among the tracks [inLanguage], the one
+/// that fits [output], or null when the rule has nothing to say (unknown
+/// output, fewer than two tracks with a known channel count, all with the same
+/// count, or no stereo track for a stereo output). Commentary and audio
+/// description tracks never take part. Ties go to the `isDefault` track, then
+/// the first one.
+AudioTrack? forkBestTrackForOutput(List<AudioTrack> inLanguage, ForkAudioOutput output) {
+  if (output == ForkAudioOutput.unknown) return null;
+  final candidates = inLanguage.where((t) => t.channels != null && !forkIsSpecialAudioTrack(t.title)).toList();
+  if (candidates.length < 2) return null;
+  if (candidates.every((t) => t.channels == candidates.first.channels)) return null;
+
+  final List<AudioTrack> fitting;
+  if (output == ForkAudioOutput.stereo) {
+    fitting = candidates.where((t) => t.channels! <= 2).toList();
+  } else {
+    final most = candidates.map((t) => t.channels!).reduce((a, b) => a > b ? a : b);
+    fitting = candidates.where((t) => t.channels == most).toList();
+  }
+  if (fitting.isEmpty) return null;
+  return fitting.where((t) => t.isDefault).firstOrNull ?? fitting.first;
+}
+
+/// Audio rule: the track in the profile's preferred language, unless the user
+/// picked by hand (A3) or the file has no such track (A4). Among several tracks
+/// in that language, the channel rule picks by the "Canaux audio" setting and
+/// wins even over the server's choice. Otherwise the server's language choice
+/// is kept (A2).
 TrackSelectionResult<AudioTrack>? forkPreferredAudio(TrackSelectionService service, List<AudioTrack> availableTracks) {
   if (availableTracks.isEmpty) return null;
   final profile = _activeProfile(service);
   if (profile == null) return null;
   final preferred = profile.defaultAudioLanguage!;
 
-  final serverRow = _serverAudioRow(service);
-  if (serverRow != null && service.languageMatches(serverRow.languageCode ?? serverRow.language, preferred)) {
-    return null;
-  }
   if (ForkTrackChoiceMemory.hasManualPick(service.metadata, ForkTrackKind.audio)) return null;
 
   final inLanguage = availableTracks.where((t) => service.languageMatches(t.language, preferred)).toList();
   if (inLanguage.isEmpty) return null;
-  final track = inLanguage.where((t) => t.isDefault).firstOrNull ?? inLanguage.first;
 
-  appLogger.d('Fork preferred language: audio $preferred over server selection');
+  final output = forkAudioOutput();
+  final best = forkBestTrackForOutput(inLanguage, output);
+  if (best != null) {
+    appLogger.d(
+      'Fork preferred language: audio $preferred, channels ${output == ForkAudioOutput.stereo ? 'stereo' : 'most'}',
+    );
+    return TrackSelectionResult(best, TrackSelectionPriority.profile);
+  }
+
+  final serverRow = _serverAudioRow(service);
+  if (serverRow != null && service.languageMatches(serverRow.languageCode ?? serverRow.language, preferred)) {
+    return null;
+  }
+
+  final track = inLanguage.where((t) => t.isDefault).firstOrNull ?? inLanguage.first;
+  appLogger.d('Fork preferred language: audio $preferred, current order');
   return TrackSelectionResult(track, TrackSelectionPriority.profile);
 }
 
@@ -150,7 +211,14 @@ Future<AudioTrack?> forkLaunchAudioIntent({
   final profile = _profileIfRuleApplies(controller.activePreferences, item);
   if (profile == null) return null;
   if (ForkTrackChoiceMemory.hasManualPick(item, ForkTrackKind.audio)) return null;
-  return AudioTrack(id: carriedAudioTrackId, language: profile.defaultAudioLanguage);
+  // Target channel count for the transcoder's evidence bands (parity tiebreaker);
+  // nothing for "original", which keeps today's behaviour.
+  final channels = switch (forkAudioOutput()) {
+    ForkAudioOutput.stereo => 2,
+    ForkAudioOutput.multichannel => 6,
+    ForkAudioOutput.unknown => null,
+  };
+  return AudioTrack(id: carriedAudioTrackId, language: profile.defaultAudioLanguage, channels: channels);
 }
 
 /// The audio descriptor of the stream a transcode actually sends, so subtitles

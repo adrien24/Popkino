@@ -58,6 +58,17 @@ Map<String, Object> _plexAudio(int id, String code, {bool selected = false}) => 
   if (selected) 'selected': true,
 };
 
+Map<String, Object> _plexAudioCh(int id, String code, int channels, {String? title}) => {
+  'id': id,
+  'streamType': 2,
+  'index': id - 100,
+  'codec': channels > 2 ? 'eac3' : 'aac',
+  'language': code,
+  'languageCode': code,
+  'channels': channels,
+  'title': ?title,
+};
+
 Map<String, Object> _plexSub(int id, String code, {bool forced = false}) => {
   'id': id,
   'streamType': 3,
@@ -168,6 +179,45 @@ void main() {
       final controller = _FakeController(null, onEnsure: (_) async => throw StateError('boom'));
       addTearDown(controller.dispose);
       expect(await forkLaunchAudioIntent(item: episode, controller: controller), isNull);
+    });
+  });
+
+  group('channels in the intent (meilleure-piste-audio)', () {
+    Future<AudioTrack?> intentFor(AudioChannelLimit? limit) async {
+      final svc = await SettingsService.getInstance();
+      if (limit != null) await svc.write(SettingsService.audioChannelLimit, limit);
+      final controller = _FakeController(_profile);
+      addTearDown(controller.dispose);
+      return forkLaunchAudioIntent(item: episode, controller: controller);
+    }
+
+    test('stereo carries 2 channels', () async {
+      expect((await intentFor(AudioChannelLimit.stereo))?.channels, 2);
+    });
+
+    test('surround51 carries 6 channels', () async {
+      expect((await intentFor(AudioChannelLimit.surround51))?.channels, 6);
+    });
+
+    test('original carries no channel count', () async {
+      final intent = await intentFor(AudioChannelLimit.original);
+      expect(intent, isNotNull);
+      expect(intent!.channels, isNull);
+    });
+
+    test('the intent picks the matching English row of an S3E8-like episode', () async {
+      final info = _plex([
+        _plexAudioCh(101, 'eng', 2),
+        _plexAudioCh(102, 'fra', 2),
+        _plexAudioCh(103, 'eng', 6, title: 'ENG VO - EAC3 DDP 5.1'),
+        _plexAudioCh(104, 'fra', 6),
+      ]);
+      final stereo = await intentFor(AudioChannelLimit.stereo);
+      expect(findSourceAudioTrackForIntent(stereo!, info.audioTracks)?.id, 101);
+      final multi = await intentFor(AudioChannelLimit.surround51);
+      expect(findSourceAudioTrackForIntent(multi!, info.audioTracks)?.id, 103);
+      final original = await intentFor(AudioChannelLimit.original);
+      expect(findSourceAudioTrackForIntent(original!, info.audioTracks), isNull);
     });
   });
 

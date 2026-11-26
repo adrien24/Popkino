@@ -9,5 +9,10 @@
       "sourceCode": "Source code",
       "sourceCodeQrHint": "Scan this code with your phone to open the address"
     }
+  },
+  "settings": {
+    "audioChannelLimitOriginalDescription": "Play every channel in the track. At launch, the audio track is not picked by channel count.",
+    "audioChannelLimitSurround51Description": "At launch, picks the track in your language with the most channels (5.1). Mixes 7.1 down to 5.1 for TVs and receivers that only take 5.1 PCM. Passthrough is unaffected.",
+    "audioChannelLimitStereoDescription": "At launch, picks the stereo track in your language. Mixes down to two channels for TV speakers, stereo speakers or headphones. Turns passthrough off."
   }
 }
