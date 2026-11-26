@@ -7,7 +7,7 @@ terminées, 8634 tests passent, aucun fichier upstream modifié. Seul échec con
 | CA | Verdict | Comment |
 |---|---|---|
 | CA1 | OK | « D'origine » : S3E8 → English 2.0 |
-| CA2 | OK au menu, écoute à faire | « Jusqu'à 5.1 » : S3E8 → « ENG VO - EAC3 DDP 5.1 », Green Lantern → « English DTS 1509kbps 5.1 » ; sortie Android en flux direct E-AC3 puis DTS, trames qui avancent. Reste : l'utilisateur confirme que le son est audible sur la TV LG (surtout DTS). Variante transmission directe désactivée non testée. |
+| CA2 | OK (vérifié à l'oreille) | « Jusqu'à 5.1 » : S3E8 → « ENG VO - EAC3 DDP 5.1 », Green Lantern → « English DTS 1509kbps 5.1 » ; sortie Android en flux direct E-AC3 puis DTS, trames qui avancent. Écoute de l'utilisateur (2026-11-27) : son normal sur la TV LG pour les deux (DTS et E-AC3). Variante transmission directe désactivée non testée. |
 | CA3 | OK | « Stéréo » : Green Lantern → English 2.0 |
 | CA3bis | OK | « D'origine » = choix d'aujourd'hui (S3E8 → English 2.0) |
 | CA4 | OK par les tests | `preferred_languages_test` (une seule piste anglaise) |
@@ -22,8 +22,7 @@ terminées, 8634 tests passent, aucun fichier upstream modifié. Seul échec con
 
 Réglage « Canaux audio » remis sur « D'origine » après la recette.
 
-Reste avant « livré » : écoute par l'utilisateur en « Jusqu'à 5.1 » (CA2), commit et fusion validés par
-l'utilisateur, version publiée.
+Commit cfbd7a1cb sur `feat/meilleure-piste-audio` (2026-11-27). Reste avant « livré » : fusion et version publiée.
 
 Constat annexe : Paramètres > « Services » annonce « Connecter Trakt, Simkl, Seerr et d'autres services » alors que
 seul Seerr est proposé dans ce build (identifiants Trakt/Simkl pas encore en place, action A4 de `nouvelle-identite`).

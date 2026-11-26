@@ -1,6 +1,7 @@
 // FORK: langues-preferees — end-to-end of the rule on the real Plex/Jellyfin mappers
 // (preview before playback, subtitle resolver before opening, selection ladder).
 // FORK: meilleure-piste-audio — and the channel rule driven by the "Canaux audio" setting.
+// FORK: sous-titres-mal-etiquetes — and subtitles whose title names another language than the declared one.
 import 'package:flutter_test/flutter_test.dart';
 import 'package:plezy/fork/track_choice_memory.dart';
 import 'package:plezy/media/account_preferences.dart';
@@ -328,6 +329,83 @@ void main() {
           expect(result?.track.language, 'eng', reason: '$limit $id');
         }
       }
+    });
+  });
+
+  group('mislabeled subtitles (sous-titres-mal-etiquetes)', () {
+    // Green Lantern: every subtitle declared English, two of them titled French.
+    Map<String, Object> plexGreenLanternSub(int id, String title, {bool forced = false, bool selected = false}) => {
+      ..._plexSub(id, 'eng', title: title, forced: forced, selected: selected),
+      'displayTitle': 'English (SRT)',
+      'extendedDisplayTitle': '$title (English SRT)',
+    };
+    Map<String, Object> jellyfinGreenLanternSub(int index, String title, {bool forced = false}) => {
+      ..._jfSub(index, 'eng', title: title, forced: forced),
+      'DisplayTitle': '$title - English - SRT',
+    };
+
+    void expectFrenchComplet(MediaItem item, MediaSourceInfo source, {required int completId}) {
+      final resolved = PlaybackSubtitleResolver.resolve(
+        metadata: item,
+        mediaInfo: source,
+        sidecars: const [],
+        profileSettings: _profile,
+      );
+      expect(resolved.primarySourceStreamId, completId);
+      // CA8: the descriptor keeps the original title and declared language.
+      expect(resolved.primaryTrack.title, 'French Complet');
+      expect(resolved.primaryTrack.language, 'eng');
+      expect(_decide(item, source, _profile).subtitle, completId);
+    }
+
+    test('Plex: English audio selects French Complet (CA1, CA8)', () {
+      final source = _plex([
+        _plexAudio(101, 'eng', selected: true),
+        _plexAudio(102, 'fra'),
+        plexGreenLanternSub(201, 'French Complet'),
+        plexGreenLanternSub(202, 'French Forced', forced: true),
+        plexGreenLanternSub(203, 'English', selected: true),
+      ]);
+      expectFrenchComplet(_plexEpisode, source, completId: 201);
+    });
+
+    test('Plex: French audio selects French Forced (CA2)', () {
+      final source = _plex([
+        _plexAudio(101, 'eng'),
+        _plexAudio(102, 'fra', selected: true),
+        plexGreenLanternSub(201, 'French Complet'),
+        plexGreenLanternSub(202, 'French Forced', forced: true),
+        plexGreenLanternSub(203, 'English'),
+      ]);
+      final resolved = PlaybackSubtitleResolver.resolve(
+        metadata: _plexEpisode,
+        mediaInfo: source,
+        sidecars: const [],
+        profileSettings: _profile,
+        preferredAudioTrack: const AudioTrack(id: carriedAudioTrackId, language: 'fra'),
+      );
+      expect(resolved.primarySourceStreamId, 202);
+      expect(resolved.primaryTrack.title, 'French Forced');
+    });
+
+    test('Jellyfin: English audio selects French Complet (CA9)', () {
+      final source = _jellyfin([
+        _jfAudio(1, 'eng', isDefault: true),
+        _jfAudio(2, 'fra'),
+        jellyfinGreenLanternSub(3, 'French Complet'),
+        jellyfinGreenLanternSub(4, 'French Forced', forced: true),
+        jellyfinGreenLanternSub(5, 'English'),
+      ], defaultAudio: 1);
+      final resolved = PlaybackSubtitleResolver.resolve(
+        metadata: _jellyfinEpisode,
+        mediaInfo: source,
+        sidecars: const [],
+        profileSettings: _profile,
+      );
+      expect(resolved.primarySourceStreamId, 3);
+      expect(resolved.primaryTrack.title, 'French Complet');
+      expect(resolved.primaryTrack.language, 'eng');
+      expect(_decide(_jellyfinEpisode, source, _profile).subtitle, 3);
     });
   });
 

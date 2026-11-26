@@ -14,7 +14,7 @@ Dernière mise à jour : 2026-11-26
 | 8 | langue-serie-plex | Respecter la langue audio/sous-titres réglée sur une série directement dans Plex (ex. anime en japonais) au lieu de celle du compte | Could | idée |
 | 9 | meilleure-piste-audio | Quand plusieurs pistes audio sont dans la langue préférée, prendre la meilleure (5.1 plutôt que stéréo) au lieu de la première | Should | en recette |
 | 10 | reglage-sous-titres-reinitialise | Couper « Choisir l'audio par langue » ne doit pas faire passer « Activer les sous-titres » en « Sélection manuelle » sans le dire | Could | idée |
-| 11 | sous-titres-mal-etiquetes | Reconnaître des sous-titres dont le titre dit « French » mais dont la langue indiquée dans le fichier est fausse | Could | spec validée |
+| 11 | sous-titres-mal-etiquetes | Reconnaître des sous-titres dont le titre dit « French » mais dont la langue indiquée dans le fichier est fausse | Could | en recette |
 | 12 | titres-autres-langues | Reconnaître dans le nom des pistes de sous-titres d'autres langues que le français et l'anglais (suite de `sous-titres-mal-etiquetes`) | Could | idée |
 
 Notes :
@@ -34,7 +34,9 @@ Notes :
   « livré » : écoute par l'utilisateur (CA1), commit et fusion validés par l'utilisateur, version publiée. Spec validée, Must juste après `nouvelle-identite`. Problème connu upstream (#2649 ouvert, #1615 « comportement voulu ») ;
   candidat naturel pour les « fonctions propres à Popkino » exigées par Google Play.
 - `meilleure-piste-audio` (2026-11-27) : recette OK sur la Fire Stick (voir docs/technique/meilleure-piste-audio/recette.md).
-  Reste avant « livré » : écoute par l'utilisateur en « Jusqu'à 5.1 » (CA2), commit et fusion validés, version publiée.
+  CA2 vérifié à l'oreille, commit cfbd7a1cb. Reste avant « livré » : fusion et version publiée.
+- `sous-titres-mal-etiquetes` (2026-11-27) : recette OK (CA1 et CA8 sur la TV, le reste par les tests). Reste avant
+  « livré » : commit et fusion validés, version publiée.
 - `nouvelle-identite` : Paramètres > Services annonce « Trakt, Simkl, Seerr… » alors que seul Seerr apparaît tant que
   A4 n'est pas fait ; à revérifier après A4 (si Trakt/Simkl restent absents, corriger le texte).
 - `meilleure-piste-audio`, `reglage-sous-titres-reinitialise`, `sous-titres-mal-etiquetes` : constatés pendant la

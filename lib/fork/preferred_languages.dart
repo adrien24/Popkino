@@ -1,5 +1,6 @@
 // FORK: langues-preferees — "preferred language first" rule for the track selection ladder.
 // FORK: meilleure-piste-audio — channel rule among the tracks of that language.
+// FORK: sous-titres-mal-etiquetes — subtitle language read from the author's own title.
 //
 // Both functions return null when the rule has nothing to say, in which case
 // the upstream ladder applies untouched. See
@@ -16,6 +17,7 @@ import '../services/track_selection_service.dart';
 import '../utils/app_logger.dart';
 import '../utils/subtitle_forced_semantics.dart';
 import 'audio_output.dart';
+import 'subtitle_title_language.dart';
 import 'track_choice_memory.dart';
 
 /// The profile when the rule may act at all (conditions shared by audio and
@@ -150,21 +152,56 @@ TrackSelectionResult<SubtitleTrack>? forkPreferredSubtitle(
   }
   if (ForkTrackChoiceMemory.hasManualPick(service.metadata, ForkTrackKind.subtitle)) return null;
 
-  bool inSubtitleLanguage(SubtitleTrack t) => service.languageMatches(t.language, subtitleLanguage);
+  final announced = service.plexMediaInfo?.subtitleTracks ?? const <MediaSubtitleTrack>[];
+
+  // The title the file's author wrote, never a display title the server builds
+  // from the declared language. A `source:<N>` descriptor reads the server row's
+  // own title; a native embedded track reads its container title; an external
+  // native track has none (mpv derives its title from the file name or URL).
+  String? authorTitle(SubtitleTrack t) {
+    if (t.id.startsWith('source:')) {
+      final rowId = int.tryParse(t.id.substring('source:'.length));
+      return announced.where((row) => row.id == rowId).firstOrNull?.title;
+    }
+    return t.isExternal ? null : t.title;
+  }
+
+  // The language the title names, else the declared one. Only used by this rule:
+  // tracks and their labels are never changed.
+  String? effectiveLanguage(SubtitleTrack t) => forkLanguageNamedByTitle(authorTitle(t)) ?? t.language;
+
+  bool inSubtitleLanguage(SubtitleTrack t) => service.languageMatches(effectiveLanguage(t), subtitleLanguage);
 
   // S3: a native track of the preferred language is announced but has not
   // arrived yet; the upstream ladder handles the wait.
   if (!availableTracks.any(inSubtitleLanguage)) {
-    final announced = service.plexMediaInfo?.subtitleTracks ?? const <MediaSubtitleTrack>[];
-    if (announced.any((row) => service.languageMatches(row.languageCode ?? row.language, subtitleLanguage))) {
+    if (announced.any(
+      (row) => service.languageMatches(
+        forkLanguageNamedByTitle(row.title) ?? (row.languageCode ?? row.language),
+        subtitleLanguage,
+      ),
+    )) {
       return null;
     }
   }
 
-  SubtitleTrack? forced() => availableTracks.where((t) => inSubtitleLanguage(t) && t.effectiveForced).firstOrNull;
+  // CA7: tracks declared in the preferred language come before those that only
+  // their title puts there. Order inside each group is kept.
+  List<SubtitleTrack> inLanguage(bool Function(SubtitleTrack) test) {
+    final matching = availableTracks.where((t) => inSubtitleLanguage(t) && test(t)).toList();
+    return [
+      ...matching.where((t) => service.languageMatches(t.language, subtitleLanguage)),
+      ...matching.where((t) => !service.languageMatches(t.language, subtitleLanguage)),
+    ];
+  }
+
+  SubtitleTrack? forced() => inLanguage((t) => t.effectiveForced).firstOrNull;
   SubtitleTrack? full() {
-    final candidates = availableTracks.where((t) => inSubtitleLanguage(t) && !t.effectiveForced).toList();
-    final preferredFull = candidates.where((t) => t.isDefault).firstOrNull ?? candidates.firstOrNull;
+    final candidates = inLanguage((t) => !t.effectiveForced);
+    // Well-labeled tracks first: the isDefault rule only looks inside the best group.
+    final wellLabeled = candidates.where((t) => service.languageMatches(t.language, subtitleLanguage)).toList();
+    final pool = wellLabeled.isNotEmpty ? wellLabeled : candidates;
+    final preferredFull = pool.where((t) => t.isDefault).firstOrNull ?? pool.firstOrNull;
     return preferredFull ?? forced();
   }
 
@@ -185,6 +222,11 @@ TrackSelectionResult<SubtitleTrack>? forkPreferredSubtitle(
   }
 
   appLogger.d('Fork preferred language: subtitle $subtitleLanguage ($mode) over server selection');
+  if (chosen != null && !service.languageMatches(chosen.language, subtitleLanguage)) {
+    appLogger.d(
+      'Fork preferred language: subtitle title says ${effectiveLanguage(chosen)}, declared ${chosen.language}',
+    );
+  }
   return TrackSelectionResult(chosen ?? SubtitleTrack.off, TrackSelectionPriority.profile);
 }
 

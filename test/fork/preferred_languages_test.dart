@@ -1,5 +1,6 @@
 // FORK: langues-preferees — unit tests of the "preferred language first" rule
 // FORK: meilleure-piste-audio — and of the channel rule among the tracks of the preferred language
+// FORK: sous-titres-mal-etiquetes — and of the subtitle language read from the author's own title
 import 'package:flutter_test/flutter_test.dart';
 import 'package:plezy/fork/audio_output.dart';
 import 'package:plezy/fork/preferred_languages.dart';
@@ -9,6 +10,7 @@ import 'package:plezy/media/media_kind.dart';
 import 'package:plezy/media/media_server_user_profile.dart';
 import 'package:plezy/media/media_source_info.dart';
 import 'package:plezy/mpv/mpv.dart';
+import 'package:plezy/services/playback_subtitle_resolver.dart';
 import 'package:plezy/services/settings_service.dart';
 import 'package:plezy/services/track_selection_service.dart';
 
@@ -406,6 +408,105 @@ void main() {
           expect(run([_subFrFull, _subFrForced], audio, profile: p)?.track, _subFrForced);
           expect(run([_subFrFull, _subEnForced], audio, profile: p)?.track, SubtitleTrack.off);
         }
+      });
+    });
+
+    group('mislabeled subtitles (sous-titres-mal-etiquetes)', () {
+      // Green Lantern: three rows all declared English, two of them titled French.
+      MediaSubtitleTrack row(int id, String? title, {bool forced = false, String? displayTitle}) => MediaSubtitleTrack(
+        id: id,
+        languageCode: 'eng',
+        title: title,
+        displayTitle: displayTitle,
+        selected: id == 12,
+        forced: forced,
+      );
+      final complet = row(10, 'French Complet');
+      final frForced = row(11, 'French Forced', forced: true);
+      final english = row(12, 'English');
+      final rows = [complet, frForced, english];
+      final info = _info(const [], subtitles: rows);
+      final descriptors = [for (final r in rows) PlaybackSubtitleResolver.subtitleTrackForSource(r)];
+      final descriptorComplet = descriptors[0];
+      final descriptorForced = descriptors[1];
+      final descriptorEnglish = descriptors[2];
+
+      test('CA1: English audio, the track titled French Complet is chosen', () {
+        expect(run(descriptors, _en, info: info)?.track, descriptorComplet);
+      });
+
+      test('CA2: French audio, the track titled French Forced is chosen', () {
+        expect(run(descriptors, _fr, info: info)?.track, descriptorForced);
+      });
+
+      test('CA3: the real English track is never taken for French', () {
+        for (final audio in <AudioTrack?>[_en, _fr, _de, null]) {
+          expect(run(descriptors, audio, info: info)?.track, isNot(descriptorEnglish), reason: '$audio');
+        }
+        expect(run([descriptorEnglish], _en, info: _info(const [], subtitles: [english]))?.track, SubtitleTrack.off);
+      });
+
+      test('CA7: a well-labeled French track comes before a mislabeled one, whatever the order or isDefault', () {
+        const good = SubtitleTrack(id: '20', language: 'fra', title: 'Full');
+        const mislabeled = SubtitleTrack(id: '21', language: 'eng', title: 'French', isDefault: true);
+        expect(run([mislabeled, good], _en)?.track, good);
+        expect(run([good, mislabeled], _en)?.track, good);
+        const goodForced = SubtitleTrack(id: '22', language: 'fra', title: 'Forced', isForced: true);
+        const mislabeledForced = SubtitleTrack(id: '23', language: 'eng', title: 'French Forced');
+        expect(run([mislabeledForced, goodForced], _fr)?.track, goodForced);
+      });
+
+      test('CA5: title and declared language agree', () {
+        const agree = SubtitleTrack(id: '30', language: 'fra', title: 'Français');
+        expect(run([_subEnFull, agree], _en)?.track, agree);
+      });
+
+      test('CA6: no title or a neutral title leaves the declared language', () {
+        const untitled = SubtitleTrack(id: '31', language: 'eng');
+        const neutral = SubtitleTrack(id: '32', language: 'eng', title: 'SDH');
+        const both = SubtitleTrack(id: '33', language: 'eng', title: 'English / French');
+        expect(run([untitled, neutral, both], _en)?.track, SubtitleTrack.off);
+      });
+
+      test('an embedded native track titled French is French', () {
+        const embedded = SubtitleTrack(id: '34', language: 'eng', title: 'French Complet');
+        expect(run([embedded], _en)?.track, embedded);
+      });
+
+      test('an external native track: its title (a file name) is not read', () {
+        const wrongName = SubtitleTrack(id: '35', language: 'eng', title: 'movie.fr.srt', isExternal: true);
+        expect(run([wrongName], _en)?.track, SubtitleTrack.off);
+        const rightLanguage = SubtitleTrack(
+          id: '36',
+          language: 'fra',
+          title: 'subs-en.srt',
+          isExternal: true,
+          uri: 'file:///subs-en.srt',
+        );
+        expect(run([rightLanguage], _en)?.track, rightLanguage);
+        const english = SubtitleTrack(id: '37', language: 'eng', title: 'subs-en.srt', isExternal: true);
+        expect(run([english], _en)?.track, SubtitleTrack.off);
+      });
+
+      test('a server row without a title: its display titles are not read', () {
+        final fabricated = row(13, null, displayTitle: 'French Complet (English SRT)');
+        final descriptor = PlaybackSubtitleResolver.subtitleTrackForSource(fabricated);
+        // The descriptor falls back to the display title, but the rule must not.
+        expect(descriptor.title, 'French Complet (English SRT)');
+        final fabricatedInfo = _info(const [], subtitles: [fabricated]);
+        expect(run([descriptor], _en, info: fabricatedInfo)?.track, SubtitleTrack.off);
+      });
+
+      test('a source descriptor whose row is unknown has no author title', () {
+        const stale = SubtitleTrack(id: 'source:99', language: 'eng', title: 'French Complet');
+        expect(run([stale], _en, info: _info(const [], subtitles: [english]))?.track, SubtitleTrack.off);
+      });
+
+      test('S3: a row only titled French, not arrived natively yet, waits for the upstream ladder', () {
+        expect(run([_subEnFull], _en, info: info), isNull);
+        // Once the native track carrying the title is there, the rule decides.
+        const arrived = SubtitleTrack(id: '40', language: 'eng', title: 'French Complet');
+        expect(run([_subEnFull, arrived], _en, info: info)?.track, arrived);
       });
     });
 
