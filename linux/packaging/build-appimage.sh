@@ -6,7 +6,7 @@
 #
 # The bundle must already have been through bundle-libs.sh and have plezy.sh
 # copied in, the same tree the tarball and packages are cut from. Writes
-# plezy-linux-<arch>.AppImage to <output-dir>.
+# popkino-linux-<arch>.AppImage to <output-dir>.
 #
 # Needs appimagetool (or APPIMAGETOOL=<path>), desktop-file-validate and
 # ImageMagick. Optional environment:
@@ -57,7 +57,7 @@ else
     exit 1
 fi
 
-OUTPUT_NAME="plezy-linux-$ARCH_SUFFIX.AppImage"
+OUTPUT_NAME="popkino-linux-$ARCH_SUFFIX.AppImage"  # FORK: nom de sortie Popkino
 OUTPUT="$OUTPUT_DIR/$OUTPUT_NAME"
 
 TOOL_ARGS=(--no-appstream)
@@ -82,7 +82,7 @@ fi
 
 WORK_DIR="$(mktemp -d)"
 trap 'rm -rf "$WORK_DIR"' EXIT
-APPDIR="$WORK_DIR/Plezy.AppDir"
+APPDIR="$WORK_DIR/Popkino.AppDir"  # FORK: identité Popkino
 
 echo "==> Assembling AppDir"
 cp -a "$BUNDLE_DIR" "$APPDIR"
@@ -94,12 +94,12 @@ ln -s plezy.sh "$APPDIR/AppRun"
 
 # appimagetool reads the one .desktop file at the AppDir root and expects the
 # icon its Icon= names beside it; .DirIcon is what file managers show.
-cp "$SCRIPT_DIR/com.edde746.plezy.desktop" "$APPDIR/"
+cp "$SCRIPT_DIR/io.github.adrien24.popkino.desktop" "$APPDIR/"  # FORK: fichier desktop renommé
 ICON_DIR="$APPDIR/usr/share/icons/hicolor/256x256/apps"
 mkdir -p "$ICON_DIR"
-"$IMAGEMAGICK" "$PROJECT_ROOT/assets/plezy.png" -resize 256x256 "$ICON_DIR/plezy.png"
-ln -s usr/share/icons/hicolor/256x256/apps/plezy.png "$APPDIR/plezy.png"
-ln -s plezy.png "$APPDIR/.DirIcon"
+"$IMAGEMAGICK" "$PROJECT_ROOT/assets/plezy.png" -resize 256x256 "$ICON_DIR/popkino.png"  # FORK: icône Popkino (source assets/plezy.png conservée)
+ln -s usr/share/icons/hicolor/256x256/apps/popkino.png "$APPDIR/popkino.png"  # FORK: icône Popkino
+ln -s popkino.png "$APPDIR/.DirIcon"  # FORK: icône Popkino
 
 echo "==> Building $OUTPUT_NAME"
 rm -f "$OUTPUT" "$OUTPUT.zsync"

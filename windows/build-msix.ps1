@@ -61,6 +61,7 @@ function New-AppxManifest {
     # Win32 app. privateNetworkClientServer is what covers LAN media servers:
     # a full-trust package is not AppContainer-isolated, but certification
     # looks for declared network intent.
+    # FORK: exécutable renommé popkino.exe (MSIX désactivé en CI, cohérence avec CMake)
     return @"
 <?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
@@ -96,7 +97,7 @@ function New-AppxManifest {
   </Capabilities>
 
   <Applications>
-    <Application Id="Plezy" Executable="plezy.exe" EntryPoint="Windows.FullTrustApplication">
+    <Application Id="Plezy" Executable="popkino.exe" EntryPoint="Windows.FullTrustApplication">
       <uap:VisualElements DisplayName="Plezy"
                           Description="A modern client for Plex and Jellyfin"
                           BackgroundColor="transparent"

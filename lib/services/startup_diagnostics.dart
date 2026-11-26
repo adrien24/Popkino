@@ -1,3 +1,4 @@
+import 'package:plezy/fork/fork_identity.dart'; // FORK: identité Popkino
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
@@ -214,7 +215,7 @@ class StartupFailureRecord {
   /// and not taken" — the ambiguity that stalled #1732 for two days.
   String describe() {
     final buffer = StringBuffer()
-      ..writeln('Plezy startup failure')
+      ..writeln('${ForkIdentity.appName} startup failure') // FORK: identité Popkino
       ..writeln('Version: $appVersion')
       ..writeln('Platform: $platform')
       ..writeln('When: ${timestamp.toUtc().toIso8601String()}')

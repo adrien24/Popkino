@@ -7,6 +7,7 @@ import '../i18n/strings.g.dart';
 import '../services/app_exit_service.dart';
 import '../services/log_upload_service.dart';
 import '../services/startup_diagnostics.dart';
+import '../fork/fork_features.dart'; // FORK: service Plezy retiré
 import '../utils/app_logger.dart';
 import '../utils/dialogs.dart';
 import '../utils/platform_detector.dart';
@@ -242,14 +243,15 @@ class _StartupFailureViewState extends State<StartupFailureView> {
                       child: Text(t.startup.copyDetails),
                     ),
                   ),
-                  FocusableButton(
-                    onPressed: enabled ? () => _uploadDetails() : null,
-                    child: OutlinedButton(
-                      key: startupFailureUploadKey,
+                  if (ForkFeatures.plezyLogUpload) // FORK: service Plezy retiré
+                    FocusableButton(
                       onPressed: enabled ? () => _uploadDetails() : null,
-                      child: Text(t.startup.uploadDetails),
+                      child: OutlinedButton(
+                        key: startupFailureUploadKey,
+                        onPressed: enabled ? () => _uploadDetails() : null,
+                        child: Text(t.startup.uploadDetails),
+                      ),
                     ),
-                  ),
                 ],
               ),
             ],

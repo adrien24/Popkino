@@ -13,11 +13,11 @@ OUTPUT_DIR = Path(os.environ.get("OUTPUT_DIR", PROJECT_ROOT))
 ARCH_SUFFIX = os.environ.get("ARCH_SUFFIX", "x64")
 
 METADATA = {
-    "name": "plezy",
+    "name": "popkino",  # FORK: identité Popkino
     "license": "GPL-3.0",
-    "vendor": "edde746",
-    "maintainer": "edde746 <noreply@github.com>",
-    "url": "https://github.com/edde746/plezy",
+    "vendor": "adrien24",  # FORK: identité Popkino
+    "maintainer": "adrien24 <noreply@github.com>",  # FORK: identité Popkino
+    "url": "https://github.com/adrien24/popkino",  # FORK: identité Popkino
     "description": "A modern Plex and Jellyfin client for desktop and mobile",
 }
 
@@ -158,7 +158,7 @@ def generate_icons():
     for size in ICON_SIZES:
         dest_dir = SCRIPT_DIR / f"icons/{size}x{size}"
         dest_dir.mkdir(parents=True, exist_ok=True)
-        dest = dest_dir / "plezy.png"
+        dest = dest_dir / "popkino.png"  # FORK: icône Popkino (source assets/plezy.png conservée)
 
         # Try magick (ImageMagick 7) first, then convert (ImageMagick 6)
         for cmd in ["magick", "convert"]:
@@ -173,14 +173,14 @@ def generate_icons():
 def get_file_mappings() -> list[str]:
     """Get file mappings for fpm."""
     mappings = [
-        f"{BUILD_DIR}/=/opt/plezy/",
-        f"{SCRIPT_DIR}/com.edde746.plezy.desktop=/usr/share/applications/com.edde746.plezy.desktop",
-        f"{SCRIPT_DIR}/plezy.sh=/usr/bin/plezy",
+        f"{BUILD_DIR}/=/opt/popkino/",  # FORK: chemins Popkino
+        f"{SCRIPT_DIR}/io.github.adrien24.popkino.desktop=/usr/share/applications/io.github.adrien24.popkino.desktop",  # FORK
+        f"{SCRIPT_DIR}/plezy.sh=/usr/bin/popkino",  # FORK: commande Popkino
     ]
 
     for size in ICON_SIZES:
         mappings.append(
-            f"{SCRIPT_DIR}/icons/{size}x{size}/plezy.png=/usr/share/icons/hicolor/{size}x{size}/apps/plezy.png"
+            f"{SCRIPT_DIR}/icons/{size}x{size}/popkino.png=/usr/share/icons/hicolor/{size}x{size}/apps/popkino.png"  # FORK
         )
 
     return mappings

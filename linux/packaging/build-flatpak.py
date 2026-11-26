@@ -23,7 +23,7 @@ PROJECT_ROOT = SCRIPT_DIR.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
 from pubspec_version import parse_pubspec_version
 
-APP_ID = "com.edde746.plezy"
+APP_ID = "io.github.adrien24.popkino"  # FORK: identité Popkino
 ARCHITECTURES = {"x64": ("x86_64", 62), "arm64": ("aarch64", 183)}
 
 
@@ -50,7 +50,7 @@ def main():
 
     version, _ = parse_pubspec_version((PROJECT_ROOT / "pubspec.yaml").read_text())
     args.output.mkdir(parents=True, exist_ok=True)
-    output = args.output.resolve() / f"plezy-linux-{args.arch}.flatpak"
+    output = args.output.resolve() / f"popkino-linux-{args.arch}.flatpak"  # FORK: nom de sortie Popkino
     template = SCRIPT_DIR / "flatpak"
     manifest = json.loads((template / f"{APP_ID}.json").read_text())
 
@@ -59,7 +59,10 @@ def main():
         for name in ("plezy", "relocate-caches.py"):
             shutil.copy2(template / name, stage / name)
         desktop = (SCRIPT_DIR / f"{APP_ID}.desktop").read_text()
-        (stage / f"{APP_ID}.desktop").write_text(desktop.replace("Icon=plezy", f"Icon={APP_ID}"))
+        # FORK: the shared desktop file now says Exec=popkino / Icon=popkino, while the
+        # Flatpak command stays the internal `plezy` wrapper and the icon is named after APP_ID.
+        desktop = desktop.replace("Exec=popkino", "Exec=plezy").replace("Icon=popkino", f"Icon={APP_ID}")
+        (stage / f"{APP_ID}.desktop").write_text(desktop)
         metadata = ET.parse(template / f"{APP_ID}.metainfo.xml")
         releases = ET.SubElement(metadata.getroot(), "releases")
         ET.SubElement(releases, "release", version=version.split("+", 1)[0],

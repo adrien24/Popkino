@@ -1,3 +1,4 @@
+import 'package:plezy/fork/fork_identity.dart'; // FORK: identité Popkino
 import 'dart:async';
 import '../utils/isolate_helper.dart';
 import '../utils/json_utils.dart';
@@ -817,8 +818,9 @@ class PlexClient
       final headers = <String, String>{'X-Plex-Token': token};
       if (clientIdentifier != null) {
         headers['X-Plex-Client-Identifier'] = clientIdentifier;
-        headers['X-Plex-Product'] = 'Plezy';
-        headers['X-Plex-Device-Name'] = sanitizeHeaderValue(identity.deviceName) ?? 'Plezy';
+        headers['X-Plex-Product'] = ForkIdentity.appName; // FORK: identité Popkino
+        headers['X-Plex-Device-Name'] =
+            sanitizeHeaderValue(identity.deviceName) ?? ForkIdentity.appName; // FORK: identité Popkino
       }
 
       final response = await client.get('/', headers: headers, timeout: timeout);

@@ -197,7 +197,7 @@ class _DiscoveryListener {
     );
     return utf8.encode(
       jsonEncode({
-        'app': 'plezy',
+        'app': 'popkino',
         'v': version,
         'homeHash': homeHash,
         'name': name,

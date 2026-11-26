@@ -17,7 +17,8 @@ DEFAULT_SCRIPT = ROOT / "windows/build-installer.ps1"
 if len(sys.argv) > 2:
     raise SystemExit(f"Usage: {Path(sys.argv[0]).name} [build-installer-path]")
 SCRIPT = Path(sys.argv[1]).resolve() if len(sys.argv) == 2 else DEFAULT_SCRIPT
-APP_GUID = "4213385e-f7be-4f2b-95f9-54082a28bb8f"
+# FORK: AppId Inno propre à Popkino
+APP_GUID = "1349c251-d469-4cab-87df-a2a01d3ccd68"
 text = SCRIPT.read_text(encoding="utf-8")
 errors: list[str] = []
 
@@ -62,7 +63,8 @@ require(
     "the uninstall subkey must be the shared AppId with Inno's _is1 suffix",
 )
 require(
-    "OutputBaseFilename=plezy-windows-installer" in iss,
+    # FORK: nom de l installeur Popkino
+    "OutputBaseFilename=popkino-windows-installer" in iss,
     "the release asset name is referenced by the appcast, winget and the website",
 )
 require(

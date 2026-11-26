@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- FORK: identité Popkino (fichier renommé ; id, nom, développeur, description, URL) -->
+<component type="desktop-application">
+  <id>io.github.adrien24.popkino</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>GPL-3.0-only</project_license>
+  <name>Popkino</name>
+  <summary>Watch and listen to your Plex, Jellyfin, and Emby libraries</summary>
+  <developer id="io.github.adrien24">
+    <name>adrien24</name>
+  </developer>
+  <description>
+    <p>Popkino is a media client for Plex, Jellyfin, and Emby servers, based on
+    Plezy. Browse your libraries, stream video and music, and download media
+    for offline playback.</p>
+    <p>Playback uses MPV with support for subtitles, multiple audio tracks,
+    playback speed controls, and hardware video decoding on supported systems.</p>
+  </description>
+  <launchable type="desktop-id">io.github.adrien24.popkino.desktop</launchable>
+  <url type="homepage">https://github.com/adrien24/popkino</url>
+  <url type="bugtracker">https://github.com/adrien24/popkino/issues</url>
+  <url type="vcs-browser">https://github.com/adrien24/popkino</url>
+  <content_rating type="oars-1.1"/>
+  <supports>
+    <control>pointing</control>
+    <control>keyboard</control>
+    <control>gamepad</control>
+    <control>touch</control>
+  </supports>
+</component>

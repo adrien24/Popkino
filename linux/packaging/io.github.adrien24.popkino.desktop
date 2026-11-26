@@ -1,0 +1,11 @@
+# FORK: identité Popkino (fichier renommé, Name/Comment/Exec/Icon/StartupWMClass)
+[Desktop Entry]
+Type=Application
+Name=Popkino
+Comment=A Plex, Jellyfin and Emby client for desktop and TV
+Exec=popkino
+Icon=popkino
+Terminal=false
+Categories=AudioVideo;Video;Player;
+Keywords=plex;jellyfin;media;streaming;video;
+StartupWMClass=io.github.adrien24.popkino

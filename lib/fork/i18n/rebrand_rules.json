@@ -1,0 +1,43 @@
+{
+  "_comment": "Rules used by scripts/fork/rebrand_i18n.py. Applied to values only, never to keys, outside the 'fork' branch. Per-language rules are applied longest 'from' first, then the general rule, then the per-key rules.",
+  "general": {
+    "from": "Plezy",
+    "to": "Popkino"
+  },
+  "skipTopLevel": ["fork"],
+  "languages": {
+    "az": [
+      ["Plezy-ni", "Popkino-nu"],
+      ["Plezy-nin", "Popkino-nun"],
+      ["Plezy-dən", "Popkino-dan"],
+      ["Plezy-də", "Popkino-da"],
+      ["Plezy-yə", "Popkino-ya"]
+    ],
+    "hu": [
+      ["Plezyből", "Popkinóból"],
+      ["Plezy-ből", "Popkinóból"],
+      ["Plezyben", "Popkinóban"],
+      ["Plezyt", "Popkinót"],
+      ["Plezy-t", "Popkinót"],
+      ["Plezy-nek", "Popkinónak"]
+    ],
+    "kk": [
+      ["Plezy-дегі", "Popkino-дағы"],
+      ["Plezy-дің", "Popkino-ның"],
+      ["Plezy-ді", "Popkino-ны"],
+      ["Plezy-ден", "Popkino-дан"],
+      ["Plezy-де", "Popkino-да"]
+    ],
+    "tr": [
+      ["Plezy'yi", "Popkino'yu"],
+      ["Plezy'nin", "Popkino'nun"],
+      ["Plezy'den", "Popkino'dan"],
+      ["Plezy'de", "Popkino'da"]
+    ]
+  },
+  "keys": {
+    "settings.servicesDescription": [
+      ["MyAnimeList", "Simkl"]
+    ]
+  }
+}

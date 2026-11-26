@@ -1,6 +1,8 @@
 
-PRODUCT_NAME = Plezy
+PRODUCT_NAME = Popkino
+// FORK: keep the Swift module name of upstream so RunnerTests (@testable import Plezy) build unchanged
+PRODUCT_MODULE_NAME = Plezy
 
-PRODUCT_BUNDLE_IDENTIFIER = com.edde746.plezy
+PRODUCT_BUNDLE_IDENTIFIER = io.github.adrien24.popkino
 
-PRODUCT_COPYRIGHT = Copyright © 2025 edde746
+PRODUCT_COPYRIGHT = Copyright © 2026 adrien24. Based on Plezy, © 2025 edde746. GPL-3.0.

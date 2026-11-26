@@ -33,7 +33,8 @@ env:
   # Only place this workflow names the SDK; .github/actions/setup-flutter-git pins the same release.
   FLUTTER_VERSION: "3.47.1"
   # Shared by every release build command; SENTRY_DIST stays per-platform.
-  RELEASE_DART_DEFINES: --dart-define=ENABLE_UPDATE_CHECK=true ${{ github.repository == 'edde746/plezy' && '--dart-define=ENABLE_SENTRY=true' || '' }} --dart-define=GIT_COMMIT=${{ github.sha }} --dart-define=SENTRY_ENVIRONMENT=github --dart-define=ENABLE_DONATIONS=true
+  # FORK: only addition is the POPKINO_* tracker identifiers (empty secret = tracker hidden); Plezy services are cut in Dart by ForkFeatures.
+  RELEASE_DART_DEFINES: --dart-define=ENABLE_UPDATE_CHECK=true ${{ github.repository == 'edde746/plezy' && '--dart-define=ENABLE_SENTRY=true' || '' }} --dart-define=GIT_COMMIT=${{ github.sha }} --dart-define=SENTRY_ENVIRONMENT=github --dart-define=ENABLE_DONATIONS=true --dart-define=POPKINO_TRAKT_CLIENT_ID=${{ secrets.TRAKT_CLIENT_ID }} --dart-define=POPKINO_TRAKT_CLIENT_SECRET=${{ secrets.TRAKT_CLIENT_SECRET }} --dart-define=POPKINO_SIMKL_CLIENT_ID=${{ secrets.SIMKL_CLIENT_ID }} --dart-define=POPKINO_MDBLIST_CLIENT_ID=${{ secrets.MDBLIST_CLIENT_ID }}
   TRUSTED_BUILD_CACHE_VERSION: trusted-build-v1
   LINUX_APT_PACKAGES: >
     clang cmake meson ninja-build pkg-config nasm libgtk-3-dev libevdev-dev liblzma-dev
@@ -129,28 +130,31 @@ jobs:
         if: always()
         run: rm -f android/app/upload-keystore.jks android/key.properties
 
+      # FORK: artefacts Android renommes en popkino-*
       - name: Package APKs
         run: |
-          tar -czf plezy-android-arm64-v8a.tar.gz -C build/app/outputs/flutter-apk app-arm64-v8a-release.apk --transform 's/app-arm64-v8a-release.apk/plezy.apk/'
-          tar -czf plezy-android-armeabi-v7a.tar.gz -C build/app/outputs/flutter-apk app-armeabi-v7a-release.apk --transform 's/app-armeabi-v7a-release.apk/plezy.apk/'
-          tar -czf plezy-android-x86_64.tar.gz -C build/app/outputs/flutter-apk app-x86_64-release.apk --transform 's/app-x86_64-release.apk/plezy.apk/'
+          tar -czf popkino-android-arm64-v8a.tar.gz -C build/app/outputs/flutter-apk app-arm64-v8a-release.apk --transform 's/app-arm64-v8a-release.apk/popkino.apk/'
+          tar -czf popkino-android-armeabi-v7a.tar.gz -C build/app/outputs/flutter-apk app-armeabi-v7a-release.apk --transform 's/app-armeabi-v7a-release.apk/popkino.apk/'
+          tar -czf popkino-android-x86_64.tar.gz -C build/app/outputs/flutter-apk app-x86_64-release.apk --transform 's/app-x86_64-release.apk/popkino.apk/'
 
+      # FORK: artefacts Android renommes en popkino-*
       - name: Attest APKs
         uses: actions/attest-build-provenance@0f67c3f4856b2e3261c31976d6725780e5e4c373 # v4
         with:
           subject-path: |
-            plezy-android-arm64-v8a.tar.gz
-            plezy-android-armeabi-v7a.tar.gz
-            plezy-android-x86_64.tar.gz
+            popkino-android-arm64-v8a.tar.gz
+            popkino-android-armeabi-v7a.tar.gz
+            popkino-android-x86_64.tar.gz
 
+      # FORK: artefacts Android renommes en popkino-*
       - name: Upload APKs
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: android-apk
           path: |
-            plezy-android-arm64-v8a.tar.gz
-            plezy-android-armeabi-v7a.tar.gz
-            plezy-android-x86_64.tar.gz
+            popkino-android-arm64-v8a.tar.gz
+            popkino-android-armeabi-v7a.tar.gz
+            popkino-android-x86_64.tar.gz
 
   build-ios:
     needs: validate-trusted-ref
@@ -203,27 +207,33 @@ jobs:
           SENTRY_DIST: github-ios
         run: ./scripts/upload-symbols.sh ios
 
+      # FORK: IPA renommee popkino-ios.ipa (le .app interne garde son nom de build)
       - name: Create IPA
         run: |
           mkdir -p Payload
           cp -r build/ios/iphoneos/Plezy.app Payload/
-          zip -r plezy-ios.ipa Payload
+          zip -r popkino-ios.ipa Payload
 
+      # FORK: IPA renommee popkino-ios.ipa
       - name: Attest IPA
         uses: actions/attest-build-provenance@0f67c3f4856b2e3261c31976d6725780e5e4c373 # v4
         with:
-          subject-path: plezy-ios.ipa
+          subject-path: popkino-ios.ipa
 
+      # FORK: IPA renommee popkino-ios.ipa
       - name: Upload IPA
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: ios-ipa
-          path: plezy-ios.ipa
+          path: popkino-ios.ipa
 
   build-macos:
     needs: validate-trusted-ref
     if: ${{ inputs.build_macos }}
     runs-on: macos-26
+    # FORK: without an Apple certificate the app keeps its ad hoc signature and is not notarized.
+    env:
+      MACOS_SIGNING: ${{ secrets.MACOS_CERTIFICATE_BASE64 != '' && 'developer-id' || 'adhoc' }}
     permissions:
       id-token: write
       attestations: write
@@ -271,7 +281,9 @@ jobs:
           SENTRY_DIST: github-macos
         run: ./scripts/upload-symbols.sh macos
 
+      # FORK: Developer ID signing only when a certificate secret exists (otherwise ad hoc).
       - name: Import Code Signing Certificate
+        if: env.MACOS_SIGNING == 'developer-id'
         env:
           MACOS_CERTIFICATE_BASE64: ${{ secrets.MACOS_CERTIFICATE_BASE64 }}
           MACOS_CERTIFICATE_PASSWORD: ${{ secrets.MACOS_CERTIFICATE_PASSWORD }}
@@ -290,7 +302,9 @@ jobs:
           # Add keychain to search list
           security list-keychains -d user -s $KEYCHAIN_PATH login.keychain
 
+      # FORK: Developer ID signing only when a certificate secret exists (otherwise ad hoc).
       - name: Sign Application
+        if: env.MACOS_SIGNING == 'developer-id'
         env:
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
         run: |
@@ -298,7 +312,7 @@ jobs:
           IDENTITY=$(security find-identity -v -p codesigning | grep "Developer ID Application" | head -1 | grep -o '".*"' | tr -d '"')
           echo "Signing with identity: $IDENTITY"
 
-          APP_PATH="build/macos/Build/Products/Release/Plezy.app"
+          APP_PATH="build/macos/Build/Products/Release/Popkino.app"
 
           # Deep sign everything inside-out: executables, dylibs, XPC services, app bundles, frameworks
           find "$APP_PATH/Contents/Frameworks" \( -name "*.xpc" -o -name "*.app" -o -name "*.framework" -o -name "*.dylib" \) -print0 \
@@ -318,9 +332,11 @@ jobs:
           echo "Signing app bundle: $APP_PATH"
           codesign --force --sign "$IDENTITY" --timestamp --options runtime --entitlements macos/Runner/Release.entitlements "$APP_PATH"
 
+      # FORK: Developer ID signing only when a certificate secret exists (otherwise ad hoc).
       - name: Verify Signature
+        if: env.MACOS_SIGNING == 'developer-id'
         run: |
-          APP_PATH="build/macos/Build/Products/Release/Plezy.app"
+          APP_PATH="build/macos/Build/Products/Release/Popkino.app"
           echo "Verifying signature..."
           codesign -dvvv "$APP_PATH"
           echo "Verifying signed entitlements..."
@@ -330,13 +346,15 @@ jobs:
           /usr/libexec/PlistBuddy -c "Print :com.apple.security.cs.allow-unsigned-executable-memory" "$RUNNER_TEMP/macos-entitlements.plist"
           codesign --verify --deep --strict --verbose=2 "$APP_PATH"
 
+      # FORK: Developer ID signing only when a certificate secret exists (otherwise ad hoc).
       - name: Notarize Application
+        if: env.MACOS_SIGNING == 'developer-id'
         env:
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
         run: |
-          APP_PATH="build/macos/Build/Products/Release/Plezy.app"
+          APP_PATH="build/macos/Build/Products/Release/Popkino.app"
 
           # Create a temporary ZIP for notarization submission
           echo "Creating ZIP for notarization..."
@@ -358,42 +376,46 @@ jobs:
           echo "Verifying notarization..."
           xcrun stapler validate "$APP_PATH"
 
+      # FORK: app et DMG renommes Popkino
       - name: Create DMG
         run: |
           mkdir -p dmg-staging
-          cp -R build/macos/Build/Products/Release/Plezy.app dmg-staging/
+          cp -R build/macos/Build/Products/Release/Popkino.app dmg-staging/
           ln -s /Applications dmg-staging/Applications
-          hdiutil create -format ULMO -srcfolder dmg-staging -volname "Plezy" plezy-macos.dmg
+          hdiutil create -format ULMO -srcfolder dmg-staging -volname "Popkino" popkino-macos.dmg
 
+      # FORK: DMG renomme popkino-macos.dmg
       - name: Sign DMG for Sparkle (EdDSA)
         if: env.SPARKLE_PRIVATE_KEY != ''
         env:
           SPARKLE_PRIVATE_KEY: ${{ secrets.SPARKLE_PRIVATE_KEY }}
         run: |
           printf -- "-----BEGIN ED25519 PRIVATE KEY-----\n%s\n-----END ED25519 PRIVATE KEY-----\n" "$SPARKLE_PRIVATE_KEY" > ed25519_key.pem
-          OUTPUT=$(dart run auto_updater:sign_update plezy-macos.dmg ed25519_key.pem)
+          OUTPUT=$(dart run auto_updater:sign_update popkino-macos.dmg ed25519_key.pem)
           rm ed25519_key.pem
           # Extract edSignature value from output like: sparkle:edSignature="..." length="..."
           SIGNATURE=$(echo "$OUTPUT" | grep -o 'edSignature="[^"]*"' | sed 's/edSignature="//;s/"//')
           echo "MACOS_ED_SIGNATURE=$SIGNATURE" >> $GITHUB_ENV
-          echo "MACOS_DMG_SIZE=$(stat -f%z plezy-macos.dmg)" >> $GITHUB_ENV
+          echo "MACOS_DMG_SIZE=$(stat -f%z popkino-macos.dmg)" >> $GITHUB_ENV
 
+      # FORK: DMG renomme popkino-macos.dmg
       - name: Attest macOS DMG
         uses: actions/attest-build-provenance@0f67c3f4856b2e3261c31976d6725780e5e4c373 # v4
         with:
-          subject-path: plezy-macos.dmg
+          subject-path: popkino-macos.dmg
 
       - name: Write macOS signature metadata
         run: |
           echo "${{ env.MACOS_ED_SIGNATURE }}" > macos-ed-signature.txt
           echo "${{ env.MACOS_DMG_SIZE }}" > macos-dmg-size.txt
 
+      # FORK: DMG renomme popkino-macos.dmg
       - name: Upload macOS DMG
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: macos-dmg
           path: |
-            plezy-macos.dmg
+            popkino-macos.dmg
             macos-ed-signature.txt
             macos-dmg-size.txt
 
@@ -463,6 +485,7 @@ jobs:
         shell: pwsh
         run: flutter build windows --release ${{ env.RELEASE_DART_DEFINES }} --dart-define=SENTRY_DIST=github-windows-${{ matrix.arch }} --dart-define=SUPPORTER_MODE=msstore --split-debug-info=debug-info/windows-${{ matrix.arch }}
 
+      # FORK: l'executable Windows s'appelle popkino.exe (windows/CMakeLists.txt)
       - name: Verify Windows bundle contents
         shell: pwsh
         run: |
@@ -484,7 +507,7 @@ jobs:
           $foundFiles | ForEach-Object { Write-Host "  $_" }
 
           $requiredFiles = @(
-            "plezy.exe"
+            "popkino.exe"
             "flutter_windows.dll"
             "sqlite3.dll"
             "libmpv-2.dll"
@@ -498,8 +521,8 @@ jobs:
             "vcruntime140.dll"
           )
           $forbiddenFiles = @(
-            "plezy.lib"
-            "plezy.exp"
+            "popkino.lib"
+            "popkino.exp"
             "simdutf.lib"
           )
 
@@ -596,19 +619,22 @@ jobs:
 
       # Unsigned on purpose: the Store re-signs the bundle during
       # certification. See windows/build-msix.ps1.
+      # FORK: identite Store appartenant a Plezy : MSIX uniquement sur le depot upstream
       - name: Build Store package (MSIX)
+        if: github.repository == 'edde746/plezy'
         run: .\windows\build-msix.ps1 -X64BuildDir "build-x64" -Arm64BuildDir "build-arm64" -Version "${{ steps.version.outputs.version }}"
 
+      # FORK: installeur renomme popkino-windows-installer.exe
       - name: Sign installer for WinSparkle (EdDSA)
         if: env.SPARKLE_PRIVATE_KEY != ''
         env:
           SPARKLE_PRIVATE_KEY: ${{ secrets.SPARKLE_PRIVATE_KEY }}
         shell: pwsh
         run: |
-          $keyPath = Join-Path $env:RUNNER_TEMP "plezy-winsparkle-ed25519.pem"
+          $keyPath = Join-Path $env:RUNNER_TEMP "popkino-winsparkle-ed25519.pem"
           try {
             Set-Content -Path $keyPath -Value $env:SPARKLE_PRIVATE_KEY -Encoding ascii -NoNewline
-            $output = & dart run auto_updater:sign_update plezy-windows-installer.exe $keyPath
+            $output = & dart run auto_updater:sign_update popkino-windows-installer.exe $keyPath
             if ($LASTEXITCODE -ne 0) {
               throw "WinSparkle signer failed with exit code $LASTEXITCODE"
             }
@@ -617,45 +643,58 @@ jobs:
               throw "WinSparkle signer returned no EdDSA signature"
             }
             Set-Content -Path win-ed-signature.txt -Value $match.Groups[1].Value -Encoding ascii -NoNewline
-            Set-Content -Path win-installer-size.txt -Value (Get-Item plezy-windows-installer.exe).Length.ToString() -Encoding ascii -NoNewline
+            Set-Content -Path win-installer-size.txt -Value (Get-Item popkino-windows-installer.exe).Length.ToString() -Encoding ascii -NoNewline
           } finally {
             Remove-Item -Path $keyPath -Force -ErrorAction SilentlyContinue
           }
 
+      # FORK: artefacts Windows renommes en popkino-*
       - name: Attest Windows artifacts
         uses: actions/attest-build-provenance@0f67c3f4856b2e3261c31976d6725780e5e4c373 # v4
         with:
           subject-path: |
-            plezy-windows-x64-portable.7z
-            plezy-windows-arm64-portable.7z
-            plezy-windows-installer.exe
-            plezy-windows.msixbundle
+            popkino-windows-x64-portable.7z
+            popkino-windows-arm64-portable.7z
+            popkino-windows-installer.exe
 
+      # FORK: le msixbundle n'est plus attesté avec les autres artefacts (il n'existe que sur le depot upstream);
+      # step separee et conditionnelle pour garder la garde check_windows_msix.py intacte.
+      - name: Attest Store package (MSIX)
+        if: github.repository == 'edde746/plezy'
+        uses: actions/attest-build-provenance@0f67c3f4856b2e3261c31976d6725780e5e4c373 # v4
+        with:
+          subject-path: plezy-windows.msixbundle
+
+      # FORK: portable renomme popkino-windows-x64-portable.7z
       - name: Upload x64 portable
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: windows-x64-portable
-          path: plezy-windows-x64-portable.7z
+          path: popkino-windows-x64-portable.7z
 
+      # FORK: portable renomme popkino-windows-arm64-portable.7z
       - name: Upload arm64 portable
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: windows-arm64-portable
-          path: plezy-windows-arm64-portable.7z
+          path: popkino-windows-arm64-portable.7z
 
+      # FORK: installeur renomme popkino-windows-installer.exe
       - name: Upload installer
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: windows-installer
           path: |
-            plezy-windows-installer.exe
+            popkino-windows-installer.exe
             win-ed-signature.txt
             win-installer-size.txt
 
       # Deliberately not attached to the GitHub release in create-release: a
       # Store-identity package cannot be installed without the Store's
       # certificate, so it is only useful as a Partner Center upload.
+      # FORK: identite Store appartenant a Plezy : MSIX uniquement sur le depot upstream
       - name: Upload Store package
+        if: github.repository == 'edde746/plezy'
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: windows-msix
@@ -860,10 +899,11 @@ jobs:
         shell: bash
         run: python3 linux/packaging/build-flatpak.py --bundle "$BUNDLE_DIR" --arch ${{ matrix.arch }} --output "$GITHUB_WORKSPACE"
 
+      # FORK: artefacts Linux renommes en popkino-*
       - name: Verify installed Flatpak runtime dependencies
         shell: bash
         run: |
-          flatpak install --user --noninteractive "plezy-linux-${{ matrix.arch }}.flatpak"
+          flatpak install --user --noninteractive "popkino-linux-${{ matrix.arch }}.flatpak"
           dbus-run-session -- python3 linux/packaging/check-flatpak.py --arch ${{ matrix.arch }}
 
       # The same resolved bundle, launched through plezy.sh as AppRun. The
@@ -885,36 +925,39 @@ jobs:
           RUNTIME_FILE="$RUNNER_TEMP/appimage/runtime" \
           bash linux/packaging/build-appimage.sh "$BUNDLE_DIR" ${{ matrix.arch }} "$GITHUB_WORKSPACE"
 
+      # FORK: artefacts Linux renommes en popkino-*
       - name: Create tarball
         shell: bash
         run: |
           cd "$BUNDLE_DIR"
-          tar -czf "$GITHUB_WORKSPACE/plezy-linux-${{ matrix.arch }}.tar.gz" *
+          tar -czf "$GITHUB_WORKSPACE/popkino-linux-${{ matrix.arch }}.tar.gz" *
 
+      # FORK: artefacts Linux renommes en popkino-*
       - name: Attest Linux ${{ matrix.arch }} artifacts
         uses: actions/attest-build-provenance@0f67c3f4856b2e3261c31976d6725780e5e4c373 # v4
         with:
           subject-path: |
-            plezy-linux-${{ matrix.arch }}.tar.gz
-            plezy-linux-${{ matrix.arch }}.deb
-            plezy-linux-${{ matrix.arch }}.rpm
-            plezy-linux-${{ matrix.arch }}.pkg.tar.zst
-            plezy-linux-${{ matrix.arch }}.flatpak
-            plezy-linux-${{ matrix.arch }}.AppImage
-            plezy-linux-${{ matrix.arch }}.AppImage.zsync
+            popkino-linux-${{ matrix.arch }}.tar.gz
+            popkino-linux-${{ matrix.arch }}.deb
+            popkino-linux-${{ matrix.arch }}.rpm
+            popkino-linux-${{ matrix.arch }}.pkg.tar.zst
+            popkino-linux-${{ matrix.arch }}.flatpak
+            popkino-linux-${{ matrix.arch }}.AppImage
+            popkino-linux-${{ matrix.arch }}.AppImage.zsync
 
+      # FORK: artefacts Linux renommes en popkino-*
       - name: Upload Linux ${{ matrix.arch }} artifacts
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: linux-${{ matrix.arch }}
           path: |
-            plezy-linux-${{ matrix.arch }}.tar.gz
-            plezy-linux-${{ matrix.arch }}.deb
-            plezy-linux-${{ matrix.arch }}.rpm
-            plezy-linux-${{ matrix.arch }}.pkg.tar.zst
-            plezy-linux-${{ matrix.arch }}.flatpak
-            plezy-linux-${{ matrix.arch }}.AppImage
-            plezy-linux-${{ matrix.arch }}.AppImage.zsync
+            popkino-linux-${{ matrix.arch }}.tar.gz
+            popkino-linux-${{ matrix.arch }}.deb
+            popkino-linux-${{ matrix.arch }}.rpm
+            popkino-linux-${{ matrix.arch }}.pkg.tar.zst
+            popkino-linux-${{ matrix.arch }}.flatpak
+            popkino-linux-${{ matrix.arch }}.AppImage
+            popkino-linux-${{ matrix.arch }}.AppImage.zsync
 
   create-release:
     needs: [validate-trusted-ref, build-android, build-ios, build-macos, build-windows, package-windows, build-linux]
@@ -1014,6 +1057,7 @@ jobs:
       - name: Display structure of downloaded files
         run: ls -R artifacts
 
+      # FORK: flux de mise a jour Popkino : titre, URL du depot courant, pas de lien de notes Plezy
       - name: Generate appcast.xml
         run: |
           VERSION="${{ steps.version.outputs.version }}"
@@ -1043,18 +1087,17 @@ jobs:
           <?xml version="1.0" encoding="utf-8"?>
           <rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle">
             <channel>
-              <title>Plezy Updates</title>
+              <title>Popkino Updates</title>
               <item>
                 <title>Version ${VERSION}</title>
                 <sparkle:version>${BUILD_NUMBER}</sparkle:version>
                 <sparkle:shortVersionString>${VERSION}</sparkle:shortVersionString>
-                <sparkle:releaseNotesLink>https://gh-html.edde746.dev/edde746/plezy/${VERSION}</sparkle:releaseNotesLink>
           XMLEOF
 
           # macOS enclosure
           if [ -n "$MACOS_ED_SIG" ]; then
             cat >> appcast.xml << XMLEOF
-                <enclosure url="https://github.com/edde746/plezy/releases/download/${VERSION}/plezy-macos.dmg"
+                <enclosure url="https://github.com/${GITHUB_REPOSITORY}/releases/download/${VERSION}/popkino-macos.dmg"
                            length="${MACOS_DMG_SIZE}" type="application/octet-stream"
                            sparkle:edSignature="${MACOS_ED_SIG}"
                            sparkle:os="macos" />
@@ -1064,7 +1107,7 @@ jobs:
           # Windows enclosure
           if [ -n "$WIN_ED_SIG" ]; then
             cat >> appcast.xml << XMLEOF
-                <enclosure url="https://github.com/edde746/plezy/releases/download/${VERSION}/plezy-windows-installer.exe"
+                <enclosure url="https://github.com/${GITHUB_REPOSITORY}/releases/download/${VERSION}/popkino-windows-installer.exe"
                            length="${WIN_INSTALLER_SIZE}" type="application/octet-stream"
                            sparkle:edSignature="${WIN_ED_SIG}"
                            sparkle:installerArguments="/SILENT /SP-"
@@ -1084,26 +1127,27 @@ jobs:
           echo "Generated appcast.xml:"
           cat appcast.xml
 
+      # FORK: fichiers de release renommes en popkino-*
       - name: Collect release files
         id: release-files
         run: |
           {
             echo 'files<<EOF'
             if [ "${{ inputs.build_android }}" = "true" ]; then
-              echo artifacts/android-apk/plezy-android-arm64-v8a.tar.gz
-              echo artifacts/android-apk/plezy-android-armeabi-v7a.tar.gz
-              echo artifacts/android-apk/plezy-android-x86_64.tar.gz
+              echo artifacts/android-apk/popkino-android-arm64-v8a.tar.gz
+              echo artifacts/android-apk/popkino-android-armeabi-v7a.tar.gz
+              echo artifacts/android-apk/popkino-android-x86_64.tar.gz
             fi
             if [ "${{ inputs.build_ios }}" = "true" ]; then
-              echo artifacts/ios-ipa/plezy-ios.ipa
+              echo artifacts/ios-ipa/popkino-ios.ipa
             fi
             if [ "${{ inputs.build_macos }}" = "true" ]; then
-              echo artifacts/macos-dmg/plezy-macos.dmg
+              echo artifacts/macos-dmg/popkino-macos.dmg
             fi
             if [ "${{ inputs.build_windows }}" = "true" ]; then
-              echo artifacts/windows-x64-portable/plezy-windows-x64-portable.7z
-              echo artifacts/windows-arm64-portable/plezy-windows-arm64-portable.7z
-              echo artifacts/windows-installer/plezy-windows-installer.exe
+              echo artifacts/windows-x64-portable/popkino-windows-x64-portable.7z
+              echo artifacts/windows-arm64-portable/popkino-windows-arm64-portable.7z
+              echo artifacts/windows-installer/popkino-windows-installer.exe
             fi
             if [ "${{ inputs.build_linux }}" = "true" ]; then
               echo 'artifacts/linux-x64/*'

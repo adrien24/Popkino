@@ -9,6 +9,7 @@ import android.os.Build
 import android.os.ParcelFileDescriptor
 import android.system.Os
 import android.system.OsConstants
+import com.edde746.plezy.BuildConfig
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileNotFoundException
@@ -22,7 +23,8 @@ import java.util.concurrent.TimeUnit
 
 class SystemShelfArtworkProvider : ContentProvider() {
   companion object {
-    const val AUTHORITY = "com.edde746.plezy.systemshelf.artwork"
+    // FORK: derived from the applicationId so Popkino and Plezy can be installed side by side
+    const val AUTHORITY = "${BuildConfig.APPLICATION_ID}.systemshelf.artwork"
   }
 
   override fun onCreate(): Boolean = context != null

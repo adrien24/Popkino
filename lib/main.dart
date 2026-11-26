@@ -1,3 +1,5 @@
+import 'package:plezy/fork/fork_features.dart'; // FORK: service Plezy retiré
+import 'package:plezy/fork/fork_identity.dart'; // FORK: identité Popkino
 import 'dart:async';
 import 'dart:io' show Directory, Platform, ProcessInfo;
 import 'dart:ui' show AppExitResponse;
@@ -112,8 +114,10 @@ import 'utils/dialogs.dart';
 import 'widgets/dialog_action_button.dart';
 import 'widgets/startup_failure_view.dart';
 
-const bool _enableSentry = bool.fromEnvironment('ENABLE_SENTRY', defaultValue: false);
-const String _sentryDsn = 'https://6a1a6ef8c72140099b2798973c1bfb2f@bugs.plezy.app/1';
+// FORK: service Plezy retiré (Sentry de Plezy coupé, DSN vide)
+const bool _enableSentry =
+    ForkFeatures.plezyCrashReporting && bool.fromEnvironment('ENABLE_SENTRY', defaultValue: false);
+const String _sentryDsn = '';
 const String gitCommit = String.fromEnvironment('GIT_COMMIT');
 const String _sentryEnvironment = String.fromEnvironment('SENTRY_ENVIRONMENT');
 const String _sentryDist = String.fromEnvironment('SENTRY_DIST');
@@ -1088,7 +1092,7 @@ Future<void> _logEnvironmentDiagnostics() async {
     await Future.sync(() => Sentry.configureScope((scope) => scope.setTag('renderer', rendererName ?? 'unknown')));
   }
   appLogger.i(
-    'Plezy v${appVersion.label}$commitSuffix$renderer'
+    '${ForkIdentity.appName} v${appVersion.label}$commitSuffix$renderer' // FORK: identité Popkino
     ' [effects: ${DevicePerformance.describeSync()}]',
   );
   appLogger.i('Display: ${DevicePerformance.describeDisplay()}');

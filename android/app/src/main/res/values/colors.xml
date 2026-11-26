@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="ic_launcher_background">#ffffff</color>
+    <!-- FORK: fond du logo Popkino (branding/brand.json) -->
+    <color name="ic_launcher_background">#6D28D9</color>
     <color name="splash_background">#F7F7F8</color>
     <color name="splash_dark">#0E0F12</color>
     <color name="splash_oled">#000000</color>

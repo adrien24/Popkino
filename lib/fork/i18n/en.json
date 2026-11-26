@@ -1,0 +1,10 @@
+{
+  "fork": {
+    "about": {
+      "basedOn": "Based on Plezy. Popkino is an independent project, neither developed nor endorsed by the Plezy project.",
+      "license": "License",
+      "sourceCode": "Source code",
+      "sourceCodeQrHint": "Scan this code with your phone to open the address"
+    }
+  }
+}

@@ -15,7 +15,9 @@ import org.w3c.dom.Element
 class SystemShelfArtworkManifestTest {
   private companion object {
     const val ANDROID_NAMESPACE = "http://schemas.android.com/apk/res/android"
-    const val AUTHORITY = "com.edde746.plezy.systemshelf.artwork"
+
+    // FORK: the manifest derives the authority from the applicationId (Gradle fills the placeholder in)
+    const val AUTHORITY = "\${applicationId}.systemshelf.artwork"
     val MANIFEST_CANDIDATES = listOf(
       "src/main/AndroidManifest.xml",
       "app/src/main/AndroidManifest.xml",

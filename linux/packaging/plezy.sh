@@ -1,15 +1,15 @@
 #!/usr/bin/env bash
-# Wrapper script for Plezy. Works for both:
+# Wrapper script for Popkino (FORK: renamed from Plezy). Works for both:
 #   - Portable tarball (run from extracted directory)
-#   - System packages (/usr/bin/plezy -> /opt/plezy/)
+#   - System packages (/usr/bin/popkino -> /opt/popkino/)
 
 # Resolve the real path of this script, following symlinks
 SCRIPT_PATH="$(readlink -f "$0")"
 INSTALL_DIR="$(dirname "$SCRIPT_PATH")"
 
-# If we're in /usr/bin, the actual install is in /opt/plezy
+# If we're in /usr/bin, the actual install is in /opt/popkino
 if [[ "$INSTALL_DIR" == "/usr/bin" ]]; then
-    INSTALL_DIR="/opt/plezy"
+    INSTALL_DIR="/opt/popkino"  # FORK: chemin Popkino
 fi
 
 # Prepend bundled libraries to LD_LIBRARY_PATH

@@ -7,7 +7,6 @@ import 'package:xml/xml.dart';
 const _configPath = 'android/app/src/main/res/xml/network_security_config.xml';
 const _expectedDomains = <String>{
   'plex.tv',
-  'plezy.app',
   'trakt.tv',
   'myanimelist.net',
   'anilist.co',
@@ -35,8 +34,8 @@ const _fixedEndpointSourcePaths = <String>[
   'lib/services/catalog/seerr_catalog_source.dart',
   'lib/services/discord_rpc_service.dart',
   'lib/services/update_service.dart',
-  'lib/services/plezy_server.dart',
-  'lib/main.dart',
+  'lib/fork/fork_identity.dart', // FORK: l'URL du flux de mise à jour y vit
+  // FORK: plezy_server.dart et main.dart ne contiennent plus d'hôte https:// couvert
 ];
 
 void main() {

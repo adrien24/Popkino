@@ -24,10 +24,10 @@
 	<array>
 		<dict>
 			<key>CFBundleURLName</key>
-			<string>com.edde746.plezy</string>
+			<string>io.github.adrien24.popkino</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>plezy</string>
+				<string>popkino</string>
 			</array>
 		</dict>
 	</array>
@@ -62,7 +62,7 @@
 	<key>SUEnableAutomaticChecks</key>
 	<false/>
 	<key>SUFeedURL</key>
-	<string>https://cdn.jsdelivr.net/gh/edde746/plezy@appcast/appcast.xml</string>
+	<string>https://cdn.jsdelivr.net/gh/adrien24/popkino@appcast/appcast.xml</string>
 	<key>SUPublicEDKey</key>
 	<string>q7t6eu1txRrqv1PeWDCRV95rFxnmD/D3GZWbUPMwUyU=</string>
 </dict>

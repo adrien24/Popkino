@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Check the installed user Flatpak against its runtime, not the build SDK.
 
-Run after `flatpak install --user ./plezy-linux-<arch>.flatpak`.
+Run after `flatpak install --user ./popkino-linux-<arch>.flatpak`.
 This does not replace graphical playback verification on a Wayland desktop.
 """
 
@@ -41,5 +41,5 @@ architecture = {"x64": "x86_64", "arm64": "aarch64"}.get(args.arch)
 arch_options = [f"--arch={architecture}"] if architecture else []
 
 subprocess.run([
-    "flatpak", "run", "--user", *arch_options, "--command=bash", "com.edde746.plezy", "-c", CHECK,
+    "flatpak", "run", "--user", *arch_options, "--command=bash", "io.github.adrien24.popkino", "-c", CHECK,  # FORK: identité Popkino
 ], check=True)

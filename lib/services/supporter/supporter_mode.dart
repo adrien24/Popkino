@@ -1,3 +1,5 @@
+import '../../fork/fork_features.dart'; // FORK: mode Supporter imposé (import circulaire voulu)
+
 /// How this build offers the Supporter perks: preset and custom themes and
 /// alternate app icons.
 ///
@@ -19,17 +21,10 @@ enum SupporterMode {
   msstore,
 }
 
-const String _supporterModeDefine = String.fromEnvironment('SUPPORTER_MODE');
-
 /// This build's [SupporterMode]. Const, so `off` builds tree-shake perk UI that
 /// is guarded by a comparison against it.
-const SupporterMode supporterBuildMode = _supporterModeDefine == 'iap'
-    ? SupporterMode.iap
-    : _supporterModeDefine == 'unlocked'
-    ? SupporterMode.unlocked
-    : _supporterModeDefine == 'msstore'
-    ? SupporterMode.msstore
-    : SupporterMode.off;
+// FORK: mode imposé par le fork, le define SUPPORTER_MODE est ignoré
+const SupporterMode supporterBuildMode = ForkFeatures.forkSupporterMode;
 
 /// Whether this install shows the perks and how they unlock.
 enum SupporterAvailability {

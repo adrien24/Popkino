@@ -51,7 +51,7 @@ import '../../widgets/system_bottom_inset.dart';
 import '../../profiles/active_profile_provider.dart';
 import '../../profiles/profile.dart';
 import '../../watch_together/services/watch_party_relays.dart';
-import 'about_screen.dart';
+import '../../fork/screens/fork_about_screen.dart'; // FORK: À propos Popkino
 import 'add_connection_screen.dart';
 import 'account_preferences_screen.dart';
 import 'appearance_settings_screen.dart';
@@ -248,7 +248,7 @@ class _SettingsScreenState extends State<SettingsScreen> with FocusableTab, Moun
                         icon: Symbols.info_rounded,
                         title: t.settings.about,
                         subtitle: t.settings.aboutDescription,
-                        destinationBuilder: (context) => const AboutScreen(),
+                        destinationBuilder: (context) => const ForkAboutScreen(), // FORK: À propos Popkino
                       ),
                     ],
                   ),

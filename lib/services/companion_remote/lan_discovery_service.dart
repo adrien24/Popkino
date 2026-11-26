@@ -1,3 +1,4 @@
+import 'package:plezy/fork/fork_identity.dart'; // FORK: identité Popkino
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
@@ -117,7 +118,7 @@ class LanDiscoveryService {
       );
 
       final packet = jsonEncode({
-        'app': 'plezy',
+        'app': ForkIdentity.appSlug, // FORK: identité Popkino
         'v': _beaconVersion,
         'homeHash': homeHash,
         'name': deviceName,
@@ -202,7 +203,7 @@ class LanDiscoveryService {
       final packet = utf8.decode(datagram.data);
       final json = jsonDecode(packet) as Map<String, dynamic>;
 
-      if (json['app'] != 'plezy') return;
+      if (json['app'] != ForkIdentity.appSlug) return; // FORK: identité Popkino
 
       final version = json['v'] as int? ?? 0;
       final homeHash = json['homeHash'] as String? ?? '';

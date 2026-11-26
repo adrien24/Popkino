@@ -1,3 +1,4 @@
+import 'package:plezy/fork/fork_identity.dart'; // FORK: identité Popkino
 import '../../utils/app_version.dart';
 import '../../utils/device_identity.dart';
 
@@ -45,7 +46,7 @@ class PlexConfig {
       baseUrl: baseUrl,
       token: token,
       clientIdentifier: clientIdentifier,
-      product: product ?? 'Plezy',
+      product: product ?? ForkIdentity.appName, // FORK: identité Popkino
       version: appVersion.versionOrUnknown,
       platform: platform ?? identity.platform,
       device: device ?? sanitizeHeaderValue(identity.deviceModel),

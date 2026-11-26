@@ -22,7 +22,8 @@ function New-InnoSetupScript {
 
     # Uninstall registry keys are named "{AppId}_is1", so the installer and the
     # elevation code below have to agree on this GUID.
-    $AppGuid = '4213385e-f7be-4f2b-95f9-54082a28bb8f'
+    # FORK: AppId Inno propre à Popkino (cohabitation avec Plezy)
+    $AppGuid = '1349c251-d469-4cab-87df-a2a01d3ccd68'
 
     if ($HasX64 -and $HasArm64) {
         $ArchAllowed = 'x64compatible arm64'
@@ -38,11 +39,12 @@ Source: "staging\arm64\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs
         $FilesSection = 'Source: "staging\arm64\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs'
     }
 
+    # FORK: identité Popkino (Name, Publisher, ExeName, OutputBaseFilename, ElevationRequired) dans le script Inno ci-dessous
     return @"
-#define Name "Plezy"
+#define Name "Popkino"
 #define Version "$Version"
-#define Publisher "edde746"
-#define ExeName "plezy.exe"
+#define Publisher "adrien24"
+#define ExeName "popkino.exe"
 
 [Setup]
 AppId={{$AppGuid}
@@ -53,7 +55,7 @@ DefaultDirName={autopf}\{#Name}
 DefaultGroupName={#Name}
 AllowNoIcons=yes
 OutputDir=.
-OutputBaseFilename=plezy-windows-installer
+OutputBaseFilename=popkino-windows-installer
 Compression=lzma
 SolidCompression=yes
 WizardStyle=modern
@@ -68,7 +70,7 @@ ArchitecturesInstallIn64BitMode=$ArchAllowed
 Name: "english"; MessagesFile: "compiler:Default.isl"
 
 [CustomMessages]
-ElevationRequired=Plezy is installed in %1, which requires administrator privileges to update.%n%nRe-run this installer using "Run as administrator", or download the latest installer from https://github.com/edde746/plezy/releases/latest
+ElevationRequired=Popkino is installed in %1, which requires administrator privileges to update.%n%nRe-run this installer using "Run as administrator", or download the latest installer from https://github.com/adrien24/popkino/releases/latest
 
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
@@ -286,7 +288,8 @@ if (-not (Get-Command 7z -ErrorAction SilentlyContinue)) {
 
 if ($HasX64) {
     Write-Host "`nCreating x64 portable archive..." -ForegroundColor Cyan
-    $X64Portable = Join-Path $ResolvedOutput "plezy-windows-x64-portable.7z"
+    # FORK: nom des portables Popkino
+    $X64Portable = Join-Path $ResolvedOutput "popkino-windows-x64-portable.7z"
     Push-Location $X64BuildDir
     try {
         if (Test-Path $X64Portable) { Remove-Item $X64Portable -Force }
@@ -299,7 +302,8 @@ if ($HasX64) {
 
 if ($HasArm64) {
     Write-Host "`nCreating arm64 portable archive..." -ForegroundColor Cyan
-    $Arm64Portable = Join-Path $ResolvedOutput "plezy-windows-arm64-portable.7z"
+    # FORK: nom des portables Popkino
+    $Arm64Portable = Join-Path $ResolvedOutput "popkino-windows-arm64-portable.7z"
     Push-Location $Arm64BuildDir
     try {
         if (Test-Path $Arm64Portable) { Remove-Item $Arm64Portable -Force }
@@ -362,4 +366,5 @@ Remove-Item $StagingDir -Recurse -Force -ErrorAction SilentlyContinue
 Write-Host "`nBuild complete!" -ForegroundColor Green
 if ($HasX64)   { Write-Host "Portable (x64):   $X64Portable" -ForegroundColor White }
 if ($HasArm64) { Write-Host "Portable (arm64): $Arm64Portable" -ForegroundColor White }
-Write-Host "Installer:        $(Join-Path $ResolvedOutput 'plezy-windows-installer.exe')" -ForegroundColor White
+# FORK: nom de l installeur Popkino
+Write-Host "Installer:        $(Join-Path $ResolvedOutput 'popkino-windows-installer.exe')" -ForegroundColor White

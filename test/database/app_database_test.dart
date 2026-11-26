@@ -21,6 +21,7 @@ import 'package:plezy/utils/active_client_scope.dart';
 import 'package:plezy/utils/media_server_http_client.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
+import '../fork/fork_test_utils.dart'; // FORK: fonction retirée dans Popkino
 import '../test_helpers/download_fixtures.dart';
 import '../test_helpers/prefs.dart';
 
@@ -1225,7 +1226,7 @@ class _AppDatabaseTestSuite {
         expect(await target.exists(), isFalse);
       });
 
-      test('rename happy path moves the file and preserves content', () async {
+      test('rename happy path moves the file and preserves content', skip: forkRemovedSkip, () async {
         final source = File('${tempDir.path}/Documents/plezy_downloads.db');
         final target = File('${tempDir.path}/AppData/plezy_downloads.db');
         await source.parent.create(recursive: true);
@@ -1239,7 +1240,7 @@ class _AppDatabaseTestSuite {
         expect(await target.readAsBytes(), [1, 2, 3, 4, 5]);
       });
 
-      test('cross-drive rename failure falls back to copy + delete', () async {
+      test('cross-drive rename failure falls back to copy + delete', skip: forkRemovedSkip, () async {
         // Simulate Windows ERROR_NOT_SAME_DEVICE by throwing the same
         // exception shape `File.rename` would emit when source and target
         // live on different volumes.
@@ -1264,115 +1265,123 @@ class _AppDatabaseTestSuite {
         expect(await target.readAsBytes(), [9, 8, 7]);
       });
 
-      test('interrupted fallback copy leaves no canonical partial file and retry succeeds', () async {
-        final source = File('${tempDir.path}/Documents/plezy_downloads.db');
-        final target = File('${tempDir.path}/AppData/plezy_downloads.db');
-        const sourceBytes = [0xAA, 0xBB, 0xCC, 0xDD];
-        await source.parent.create(recursive: true);
-        await target.parent.create(recursive: true);
-        await source.writeAsBytes(sourceBytes);
+      test(
+        'interrupted fallback copy leaves no canonical partial file and retry succeeds',
+        skip: forkRemovedSkip,
+        () async {
+          final source = File('${tempDir.path}/Documents/plezy_downloads.db');
+          final target = File('${tempDir.path}/AppData/plezy_downloads.db');
+          const sourceBytes = [0xAA, 0xBB, 0xCC, 0xDD];
+          await source.parent.create(recursive: true);
+          await target.parent.create(recursive: true);
+          await source.writeAsBytes(sourceBytes);
 
-        File? partialTemporary;
-        await expectLater(
-          migrateLegacyDesktopDatabase(
+          File? partialTemporary;
+          await expectLater(
+            migrateLegacyDesktopDatabase(
+              sourceOverride: source,
+              target: target,
+              renameOverride: (_, _) => throw const FileSystemException('cross-drive', ''),
+              copyOverride: (_, temporary) async {
+                partialTemporary = temporary;
+                final output = await temporary.open(mode: FileMode.writeOnly);
+                try {
+                  await output.writeFrom(sourceBytes, 0, 2);
+                  await output.flush();
+                } finally {
+                  await output.close();
+                }
+                throw const FileSystemException('interrupted copy', '');
+              },
+            ),
+            completes,
+          );
+
+          expect(await source.exists(), isTrue, reason: 'the intact legacy database must remain retryable');
+          expect(await source.readAsBytes(), sourceBytes);
+          expect(await target.exists(), isFalse, reason: 'a partial copy must never become canonical');
+          expect(partialTemporary, isNotNull);
+          expect(await partialTemporary!.exists(), isFalse, reason: 'failed temporary copies must be cleaned');
+
+          await migrateLegacyDesktopDatabase(
             sourceOverride: source,
             target: target,
             renameOverride: (_, _) => throw const FileSystemException('cross-drive', ''),
-            copyOverride: (_, temporary) async {
-              partialTemporary = temporary;
-              final output = await temporary.open(mode: FileMode.writeOnly);
-              try {
-                await output.writeFrom(sourceBytes, 0, 2);
-                await output.flush();
-              } finally {
-                await output.close();
-              }
-              throw const FileSystemException('interrupted copy', '');
+          );
+
+          expect(await source.exists(), isFalse, reason: 'successful retry removes the legacy database');
+          expect(await target.readAsBytes(), sourceBytes);
+        },
+      );
+
+      test(
+        'overlapping fallback publisher cannot replace canonical updates with its stale copy',
+        skip: forkRemovedSkip,
+        () async {
+          final staleSource = File('${tempDir.path}/Documents/stale.db');
+          final winnerSource = File('${tempDir.path}/Documents/winner.db');
+          final target = File('${tempDir.path}/AppData/plezy_downloads.db');
+          const staleBytes = [0x10, 0x20, 0x30];
+          const winnerBytes = [0x40, 0x50, 0x60];
+          const updatedCanonicalBytes = [0x70, 0x80, 0x90];
+          await staleSource.parent.create(recursive: true);
+          await target.parent.create(recursive: true);
+          await staleSource.writeAsBytes(staleBytes);
+          await winnerSource.writeAsBytes(winnerBytes);
+
+          final staleCopyReady = Completer<void>();
+          final releaseStaleCopy = Completer<void>();
+          final staleCopyReleased = Completer<void>();
+          final winnerPublished = Completer<void>();
+          var stalePublishAttempted = false;
+
+          Future<void> failCrossDriveRename(File _, String _) async {
+            throw const FileSystemException('cross-drive', '');
+          }
+
+          final staleMigration = migrateLegacyDesktopDatabase(
+            sourceOverride: staleSource,
+            target: target,
+            renameOverride: failCrossDriveRename,
+            copyOverride: (source, temporary) async {
+              await temporary.writeAsBytes(await source.readAsBytes(), flush: true);
+              staleCopyReady.complete();
+              await releaseStaleCopy.future;
+              staleCopyReleased.complete();
             },
-          ),
-          completes,
-        );
+            publishOverride: (temporary, canonical) async {
+              stalePublishAttempted = true;
+              await temporary.rename(canonical.path);
+            },
+          );
+          await staleCopyReady.future;
 
-        expect(await source.exists(), isTrue, reason: 'the intact legacy database must remain retryable');
-        expect(await source.readAsBytes(), sourceBytes);
-        expect(await target.exists(), isFalse, reason: 'a partial copy must never become canonical');
-        expect(partialTemporary, isNotNull);
-        expect(await partialTemporary!.exists(), isFalse, reason: 'failed temporary copies must be cleaned');
+          final winnerMigration = migrateLegacyDesktopDatabase(
+            sourceOverride: winnerSource,
+            target: target,
+            renameOverride: failCrossDriveRename,
+            publishOverride: (temporary, canonical) async {
+              await temporary.rename(canonical.path);
+              winnerPublished.complete();
+              await staleCopyReleased.future;
+              await canonical.writeAsBytes(updatedCanonicalBytes, flush: true);
+            },
+          );
+          await winnerPublished.future;
 
-        await migrateLegacyDesktopDatabase(
-          sourceOverride: source,
-          target: target,
-          renameOverride: (_, _) => throw const FileSystemException('cross-drive', ''),
-        );
+          releaseStaleCopy.complete();
+          await Future.wait([winnerMigration, staleMigration]);
 
-        expect(await source.exists(), isFalse, reason: 'successful retry removes the legacy database');
-        expect(await target.readAsBytes(), sourceBytes);
-      });
-
-      test('overlapping fallback publisher cannot replace canonical updates with its stale copy', () async {
-        final staleSource = File('${tempDir.path}/Documents/stale.db');
-        final winnerSource = File('${tempDir.path}/Documents/winner.db');
-        final target = File('${tempDir.path}/AppData/plezy_downloads.db');
-        const staleBytes = [0x10, 0x20, 0x30];
-        const winnerBytes = [0x40, 0x50, 0x60];
-        const updatedCanonicalBytes = [0x70, 0x80, 0x90];
-        await staleSource.parent.create(recursive: true);
-        await target.parent.create(recursive: true);
-        await staleSource.writeAsBytes(staleBytes);
-        await winnerSource.writeAsBytes(winnerBytes);
-
-        final staleCopyReady = Completer<void>();
-        final releaseStaleCopy = Completer<void>();
-        final staleCopyReleased = Completer<void>();
-        final winnerPublished = Completer<void>();
-        var stalePublishAttempted = false;
-
-        Future<void> failCrossDriveRename(File _, String _) async {
-          throw const FileSystemException('cross-drive', '');
-        }
-
-        final staleMigration = migrateLegacyDesktopDatabase(
-          sourceOverride: staleSource,
-          target: target,
-          renameOverride: failCrossDriveRename,
-          copyOverride: (source, temporary) async {
-            await temporary.writeAsBytes(await source.readAsBytes(), flush: true);
-            staleCopyReady.complete();
-            await releaseStaleCopy.future;
-            staleCopyReleased.complete();
-          },
-          publishOverride: (temporary, canonical) async {
-            stalePublishAttempted = true;
-            await temporary.rename(canonical.path);
-          },
-        );
-        await staleCopyReady.future;
-
-        final winnerMigration = migrateLegacyDesktopDatabase(
-          sourceOverride: winnerSource,
-          target: target,
-          renameOverride: failCrossDriveRename,
-          publishOverride: (temporary, canonical) async {
-            await temporary.rename(canonical.path);
-            winnerPublished.complete();
-            await staleCopyReleased.future;
-            await canonical.writeAsBytes(updatedCanonicalBytes, flush: true);
-          },
-        );
-        await winnerPublished.future;
-
-        releaseStaleCopy.complete();
-        await Future.wait([winnerMigration, staleMigration]);
-
-        expect(stalePublishAttempted, isFalse);
-        expect(await target.readAsBytes(), updatedCanonicalBytes);
-        expect(await winnerSource.exists(), isFalse, reason: 'the winning source is removed after publication');
-        expect(await staleSource.readAsBytes(), staleBytes, reason: 'the skipped stale source remains retryable');
-        final leakedTemporaries = target.parent.listSync().whereType<File>().where(
-          (file) => file.path.endsWith('.tmp'),
-        );
-        expect(leakedTemporaries, isEmpty, reason: 'both publishers clean their sibling temporary copies');
-      });
+          expect(stalePublishAttempted, isFalse);
+          expect(await target.readAsBytes(), updatedCanonicalBytes);
+          expect(await winnerSource.exists(), isFalse, reason: 'the winning source is removed after publication');
+          expect(await staleSource.readAsBytes(), staleBytes, reason: 'the skipped stale source remains retryable');
+          final leakedTemporaries = target.parent.listSync().whereType<File>().where(
+            (file) => file.path.endsWith('.tmp'),
+          );
+          expect(leakedTemporaries, isEmpty, reason: 'both publishers clean their sibling temporary copies');
+        },
+      );
 
       test('documents directory lookup failure is a silent no-op', () async {
         final previousPathProvider = PathProviderPlatform.instance;

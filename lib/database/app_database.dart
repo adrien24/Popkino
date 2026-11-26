@@ -15,6 +15,7 @@ import 'tvos_database_recovery_store.dart';
 import '../models/download_models.dart';
 import '../services/base_shared_preferences_service.dart';
 import '../services/credential_vault.dart';
+import '../fork/fork_features.dart'; // FORK: base Plezy laissée intacte
 import '../utils/app_logger.dart';
 import '../utils/serial_future_queue.dart';
 import '../utils/global_key_utils.dart';
@@ -1481,6 +1482,7 @@ Future<void> migrateLegacyDesktopDatabase({
   Future<void> Function(File source, File temporary)? copyOverride,
   Future<void> Function(File temporary, File target)? publishOverride,
 }) async {
+  if (!ForkFeatures.legacyPlezyMigrations) return; // FORK: base Plezy laissée intacte
   final File oldFile;
   try {
     if (sourceOverride != null) {

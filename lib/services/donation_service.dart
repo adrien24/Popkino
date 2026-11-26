@@ -1,3 +1,4 @@
+import 'package:plezy/fork/fork_features.dart'; // FORK: service Plezy retiré
 import 'package:plezy/utils/platform_detector.dart';
 
 class DonationService {
@@ -8,6 +9,9 @@ class DonationService {
   /// mechanism, so the tile is a certification risk there. Every other Windows
   /// build shape and every other platform keeps it.
   static bool get isEnabled {
-    return const bool.fromEnvironment('ENABLE_DONATIONS', defaultValue: false) && !PlatformDetector.isPackagedInstall();
+    // FORK: service Plezy retiré
+    return ForkFeatures.donations &&
+        const bool.fromEnvironment('ENABLE_DONATIONS', defaultValue: false) &&
+        !PlatformDetector.isPackagedInstall();
   }
 }

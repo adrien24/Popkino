@@ -56,7 +56,8 @@ def validate_windows_signing(block: str) -> None:
         "Windows signing must use the enforced root dependency lock",
     )
     require(
-        "dart run auto_updater:sign_update plezy-windows-installer.exe $keyPath"
+        # FORK: installer renamed by the Popkino identity (see build.yml).
+        "dart run auto_updater:sign_update popkino-windows-installer.exe $keyPath"
         in signing,
         "Windows signing must execute the locked auto_updater package",
     )

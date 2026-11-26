@@ -4,6 +4,7 @@ import 'dart:io' show Platform;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
+import '../../fork/fork_features.dart'; // FORK: alternate icons removed
 import '../../mixins/disposable_change_notifier_mixin.dart';
 import '../../utils/app_logger.dart';
 import '../supporter/supporter_mode.dart';
@@ -44,7 +45,10 @@ class AppIconService extends ChangeNotifier with DisposableChangeNotifierMixin {
   /// and only in builds that offer the Supporter perks. The native side still
   /// answers whether this device's launcher can switch.
   static bool get _defaultPlatformHasAlternateIcons =>
-      supporterBuildMode != SupporterMode.off && (Platform.isIOS || Platform.isAndroid);
+      // FORK: alternate icons removed (Plezy artwork)
+      ForkFeatures.alternateAppIcons &&
+      supporterBuildMode != SupporterMode.off &&
+      (Platform.isIOS || Platform.isAndroid);
 
   final SupporterService _supporter;
   final bool _platformHasAlternateIcons;

@@ -11,6 +11,7 @@ import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:plezy/connection/connection.dart';
+import 'package:plezy/fork/fork_identity.dart';
 import 'package:plezy/database/app_database.dart';
 import 'package:plezy/focus/focusable_wrapper.dart';
 import 'package:plezy/i18n/strings.g.dart';
@@ -982,7 +983,7 @@ void main() {
 
       expect(find.byType(ItemLinkDialog), findsOneWidget);
       // The test server knows no catalogue ids, so the Plex GUID names the movie.
-      const link = 'plezy://play?type=movie&plex=5d776825880197001ec967c2';
+      const link = '${ForkIdentity.urlScheme}://play?type=movie&plex=5d776825880197001ec967c2';
       expect(find.text(link), findsOneWidget);
       expect(
         (DeepLink.tryParse(link)! as PlayLink).target,

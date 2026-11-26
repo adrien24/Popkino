@@ -575,7 +575,7 @@ void main() {
       expect(redirect.headers['authorization'], 'Bearer access');
       expect(
         redirect.url.query,
-        startsWith('to=simkl&imdb=tt0877057&tmdb=13916&type=tv&mal=1535&anilist=1535&client_id='),
+        startsWith('to=simkl&imdb=tt0877057&tmdb=13916&type=tv&mal=1535&anilist=1535&client_id'),
       );
       expect(ratings, [
         _rating('simkl', 9.0, votes: 4200),

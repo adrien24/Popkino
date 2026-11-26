@@ -102,9 +102,10 @@ class BuildWorkflowGuardTest(unittest.TestCase):
         self.assertIn("mutable or ad-hoc input: dart pub get", result.stderr)
 
     def test_downloaded_signer_execution_is_rejected(self) -> None:
+        # FORK: installer renamed by the Popkino identity.
         workflow = self._workflow().replace(
-            "dart run auto_updater:sign_update plezy-windows-installer.exe $keyPath",
-            "dart run sign.dart plezy-windows-installer.exe $keyPath",
+            "dart run auto_updater:sign_update popkino-windows-installer.exe $keyPath",
+            "dart run sign.dart popkino-windows-installer.exe $keyPath",
             1,
         )
 

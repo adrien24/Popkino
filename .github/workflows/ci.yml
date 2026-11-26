@@ -752,7 +752,7 @@ jobs:
         run: |
           BUNDLE_DIR=build/linux/x64/release/bundle
           mkdir -p "$OUTPUT_DIR"
-          tar -czf "$OUTPUT_DIR/plezy-linux-x64.tar.gz" -C "$BUNDLE_DIR" .
+          tar -czf "$OUTPUT_DIR/popkino-linux-x64.tar.gz" -C "$BUNDLE_DIR" .  # FORK: nom de sortie Popkino
           echo "=== libmpv travelling in every artifact ==="
           ldd "$BUNDLE_DIR/lib/libmpv.so" | grep -iE 'wayland|libX11|vdpau' || echo '(none)'
         env:
@@ -776,9 +776,9 @@ jobs:
       # here would mean every install sees an update that never goes away.
       - name: Verify the AppImage's update information
         run: |
-          APPIMAGE="$OUTPUT_DIR/plezy-linux-x64.AppImage"
+          APPIMAGE="$OUTPUT_DIR/popkino-linux-x64.AppImage"  # FORK: nom de sortie Popkino
           readelf --string-dump=.upd_info --wide "$APPIMAGE" \
-            | grep -F "gh-releases-zsync|${GITHUB_REPOSITORY%/*}|${GITHUB_REPOSITORY#*/}|latest|plezy-linux-x64.AppImage.zsync"
+            | grep -F "gh-releases-zsync|${GITHUB_REPOSITORY%/*}|${GITHUB_REPOSITORY#*/}|latest|popkino-linux-x64.AppImage.zsync"  # FORK: nom de sortie Popkino
           ZSYNC_SHA1=$(grep -a -m1 '^SHA-1: ' "$APPIMAGE.zsync" | cut -d' ' -f2)
           FILE_SHA1=$(sha1sum "$APPIMAGE" | cut -d' ' -f1)
           if [[ "$ZSYNC_SHA1" != "$FILE_SHA1" ]]; then
@@ -792,6 +792,6 @@ jobs:
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: linux-packages-smoke
-          path: ${{ github.workspace }}/packages/plezy-linux-x64.*
+          path: ${{ github.workspace }}/packages/popkino-linux-x64.*  # FORK: nom de sortie Popkino
           if-no-files-found: error
           retention-days: 7

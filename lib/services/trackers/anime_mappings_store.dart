@@ -8,6 +8,7 @@ import 'package:path_provider/path_provider.dart';
 import '../../models/trackers/anime_lists_mapping.dart';
 import '../../models/trackers/fribb_mapping_row.dart';
 import '../../utils/abortable_http_request.dart';
+import '../../fork/fork_features.dart'; // FORK: service Plezy retiré
 import '../../utils/app_logger.dart';
 import '../../utils/platform_http_client_stub.dart'
     if (dart.library.io) '../../utils/platform_http_client_io.dart'
@@ -133,6 +134,7 @@ class AnimeMappingsStore implements FribbMappingLookup, AnimeListsMappingLookup 
   /// GET the mappings, save them to disk, and return the body. Returns `null`
   /// on any failure (offline, 4xx/5xx, timeout).
   Future<Uint8List?> _download() async {
+    if (!ForkFeatures.animeTrackers) return null; // FORK: service Plezy retiré
     final client = platform.createPlatformClient();
     try {
       final res = await sendAbortableHttpRequest(

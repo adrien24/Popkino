@@ -297,13 +297,19 @@ android {
   // by FEATURE_AUTOMOTIVE and the manifest declares `uses-library android.car required=false`.
   useLibrary("android.car")
 
+  // FORK: SystemShelfArtworkProvider derives its authority from BuildConfig.APPLICATION_ID
+  buildFeatures {
+    buildConfig = true
+  }
+
   compileOptions {
     sourceCompatibility = JavaVersion.VERSION_17
     targetCompatibility = JavaVersion.VERSION_17
   }
 
   defaultConfig {
-    applicationId = "com.edde746.plezy"
+    // FORK: identité Popkino (namespace and Kotlin package stay com.edde746.plezy)
+    applicationId = "io.github.adrien24.popkino"
     minSdk = 25 // Fire OS 6.x (API 25); the mpv-android AAR shares the same floor
     targetSdk = flutter.targetSdkVersion
     versionCode = flutter.versionCode

@@ -1,3 +1,4 @@
+import 'package:plezy/fork/fork_identity.dart'; // FORK: identité Popkino
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
@@ -433,7 +434,7 @@ class SettingsExportService {
     final y = padNumber(now.year, 4);
     final m = padNumber(now.month, 2);
     final d = padNumber(now.day, 2);
-    return 'plezy-settings-$y$m$d.$fileExtension';
+    return '${ForkIdentity.appSlug}-settings-$y$m$d.$fileExtension'; // FORK: identité Popkino
   }
 
   /// Serializes the current user's settings and writes them to a location of

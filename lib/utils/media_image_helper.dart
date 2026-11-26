@@ -1,3 +1,4 @@
+import 'package:plezy/fork/fork_identity.dart'; // FORK: identité Popkino
 import 'dart:convert';
 import 'dart:math';
 
@@ -425,7 +426,7 @@ class MediaImageHelper {
       imageUrl,
       cacheKey: _serverArtworkCacheKey(imageUrl),
       cacheManager: PlexImageCacheManager.instance,
-      headers: const {'User-Agent': 'Plezy'},
+      headers: const {'User-Agent': ForkIdentity.appName}, // FORK: identité Popkino
     );
     final bounded = boundedDecode(provider, memWidth: memWidth, memHeight: memHeight);
     if (logoToneTarget == null) return bounded;

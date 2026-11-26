@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:dart_discord_presence/dart_discord_presence.dart';
 import 'package:flutter/foundation.dart';
 
+import '../fork/fork_features.dart'; // FORK: service Plezy retiré
 import '../media/media_item.dart';
 import '../media/media_kind.dart';
 import '../media/media_server_client.dart';
@@ -102,6 +103,8 @@ class DiscordRPCService {
   final DiscordRPC Function() _rpcFactory;
 
   static bool get isAvailable {
+    // FORK: service Plezy retiré
+    if (!ForkFeatures.discordPresence) return false;
     if (!PlatformDetector.isDesktopOS()) {
       return false;
     }
@@ -230,6 +233,7 @@ class DiscordRPCService {
   }
 
   Future<void> _connect() async {
+    if (!isAvailable) return; // FORK: service Plezy retiré
     if (_rpc != null) return;
 
     // Bound to this attempt's client so deferred continuations (the initialize

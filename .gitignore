@@ -75,3 +75,8 @@ maestro/**/*.png
 
 server/deploy.sh
 server/Caddyfile
+
+# FORK: secrets locaux Popkino
+popkino_secrets.json
+ed25519_key.pem
+ed25519_pub.txt

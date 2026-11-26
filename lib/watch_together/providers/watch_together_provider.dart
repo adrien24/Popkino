@@ -1,3 +1,4 @@
+import 'package:plezy/fork/fork_identity.dart'; // FORK: identité Popkino
 import 'dart:async';
 
 import 'package:clock/clock.dart';
@@ -76,7 +77,7 @@ class WatchTogetherProvider extends ChangeNotifier {
        _resolver = LibraryResolver(clientFor: clientFor ?? _noClient, findCopies: findCopies ?? _noCopies);
 
   static MediaServerClient? _noClient(String serverId) => null;
-  static String _defaultName() => 'Plezy';
+  static String _defaultName() => ForkIdentity.appName; // FORK: identité Popkino
   static String? _noProfile() => null;
   static String? _relaySetting() => SettingsService.instanceOrNull?.read(SettingsService.watchPartyRelayUrl);
   static Future<LibraryLookupResult> _noCopies(TitleQuery query, {AbortController? abort}) async => (
@@ -132,7 +133,8 @@ class WatchTogetherProvider extends ChangeNotifier {
   /// Opens the room's file when no player is open; set by the main screen.
   ChoiceOpener? navigatorOpener;
 
-  static Future<String> _plezyClientName() async => 'Plezy/${(await AppVersion.current()).versionOrUnknown}';
+  static Future<String> _plezyClientName() async =>
+      '${ForkIdentity.appName}/${(await AppVersion.current()).versionOrUnknown}'; // FORK: identité Popkino
 
   static owp.WatchParty<WatchCopy> _defaultParty({
     required owp.Relays relays,
@@ -823,9 +825,9 @@ class WatchTogetherProvider extends ChangeNotifier {
 /// protocol text; "Plezy" when nothing is left.
 String _sanitizedName(String name) {
   final text = descriptorText(name);
-  if (text == null) return 'Plezy';
+  if (text == null) return ForkIdentity.appName; // FORK: identité Popkino
   final kept = String.fromCharCodes(text.runes.take(32)).trim();
-  return kept.isEmpty ? 'Plezy' : kept;
+  return kept.isEmpty ? ForkIdentity.appName : kept; // FORK: identité Popkino
 }
 
 enum _Away { background, vehicle, profileSelection }

@@ -457,7 +457,8 @@ class WatchNextProvider internal constructor(
 
   private fun contentIdFromIntent(value: String?): String? {
     val uri = value?.let { runCatching { Uri.parse(it) }.getOrNull() } ?: return null
-    if (uri.scheme != "plezy" || uri.authority != "play") return null
+    // FORK: scheme renamed from plezy (the plezy_ content_id prefix stays, Dart reads it)
+    if (uri.scheme != "popkino" || uri.authority != "play") return null
     return uri.getQueryParameter("content_id")?.takeIf(String::isNotBlank)
   }
 
@@ -740,7 +741,8 @@ class WatchNextProvider internal constructor(
       metadata.episodeNumber?.let(builder::setEpisodeNumber)
     }
     builder.setIntentUri(
-      Uri.Builder().scheme("plezy").authority("play")
+      // FORK: scheme renamed from plezy
+      Uri.Builder().scheme("popkino").authority("play")
         .appendQueryParameter("content_id", metadata.contentId).build()
     )
     return builder.build()

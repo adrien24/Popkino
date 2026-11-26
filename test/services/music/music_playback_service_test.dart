@@ -43,6 +43,7 @@ import 'package:plezy/services/playback_launch_observer.dart';
 import 'package:provider/provider.dart';
 import '../../test_helpers/discord_rpc_fakes.dart';
 import '../../test_helpers/media_items.dart';
+import '../../fork/fork_test_utils.dart'; // FORK: fonction retirée dans Popkino
 import '../../test_helpers/multi_server_fixtures.dart';
 import '../../test_helpers/playback_report_fakes.dart';
 import '../../test_helpers/prefs.dart';
@@ -1870,7 +1871,8 @@ void main() {
     });
   });
 
-  group('Discord presence', () {
+  group('Discord presence', skip: forkRemovedSkip, () {
+    // FORK: isAvailable toujours faux
     late FakeDiscordRPC rpc;
     late DiscordRPCService rpcService;
 

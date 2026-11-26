@@ -1,3 +1,4 @@
+import 'package:plezy/fork/fork_identity.dart'; // FORK: identité Popkino
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -308,7 +309,8 @@ class _ProfileSessionScreenState extends State<ProfileSessionScreen> {
                   return WatchTogetherProvider(
                     clientFor: (serverId) => multiServer.getClientForServer(ServerId(serverId)),
                     findCopies: multiServer.aggregationService.findTitleCopiesAcrossServers,
-                    displayName: () => activeProfile.active?.displayName ?? 'Plezy',
+                    displayName: () =>
+                        activeProfile.active?.displayName ?? ForkIdentity.appName, // FORK: identité Popkino
                     profileId: () => activeProfile.activeId,
                   );
                 },

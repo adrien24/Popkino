@@ -10,6 +10,7 @@ import 'package:plezy/media/media_server_client.dart';
 import 'package:plezy/media/server_capabilities.dart';
 import 'package:plezy/services/discord_rpc_service.dart';
 
+import '../fork/fork_test_utils.dart'; // FORK: fonction retirée dans Popkino
 import '../test_helpers/discord_rpc_fakes.dart';
 import '../test_helpers/media_items.dart';
 
@@ -37,7 +38,8 @@ void main() {
     });
   });
 
-  group('DiscordRPCService reconnect lifecycle', () {
+  group('DiscordRPCService reconnect lifecycle', skip: forkRemovedSkip, () {
+    // FORK: isAvailable toujours faux
     List<FakeDiscordRPC> clients = [];
     // When set, the next client the factory builds awaits this before its
     // initialize completes, letting tests hold an initialize in flight.
@@ -179,7 +181,8 @@ void main() {
     });
   });
 
-  group('DiscordRPCService presence', () {
+  group('DiscordRPCService presence', skip: forkRemovedSkip, () {
+    // FORK: isAvailable toujours faux
     late List<FakeDiscordRPC> clients;
 
     /// A connected service whose next presence write lands on `clients.last`.

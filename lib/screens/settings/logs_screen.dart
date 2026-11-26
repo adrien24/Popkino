@@ -22,6 +22,7 @@ import '../../services/device_performance.dart';
 import '../../services/log_upload_service.dart';
 import '../../services/startup_diagnostics.dart';
 import '../../services/video_decode_capabilities.dart';
+import '../../fork/fork_features.dart'; // FORK: service Plezy retiré
 import '../../utils/app_logger.dart';
 import '../../utils/app_version.dart';
 import '../../utils/formatters.dart';
@@ -485,11 +486,12 @@ class _LogsScreenState extends State<LogsScreen> with MountedSetStateMixin {
                                 tooltip: t.common.refresh,
                                 onPressed: _loadLogs,
                               ),
-                              FocusableAction(
-                                icon: Symbols.upload_rounded,
-                                tooltip: t.logs.uploadLogs,
-                                onPressed: _hasDiagnostics ? _uploadLogs : null,
-                              ),
+                              if (ForkFeatures.plezyLogUpload) // FORK: service Plezy retiré
+                                FocusableAction(
+                                  icon: Symbols.upload_rounded,
+                                  tooltip: t.logs.uploadLogs,
+                                  onPressed: _hasDiagnostics ? _uploadLogs : null,
+                                ),
                               FocusableAction(
                                 icon: Symbols.content_copy_rounded,
                                 tooltip: t.logs.copyLogs,

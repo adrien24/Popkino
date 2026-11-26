@@ -1,3 +1,4 @@
+import 'package:plezy/fork/fork_identity.dart'; // FORK: identité Popkino
 import '../../media/ids.dart';
 import '../../media/media_kind.dart';
 import '../../models/livetv_channel.dart';
@@ -29,7 +30,7 @@ import '../system_shelf_service.dart';
 sealed class DeepLink {
   const DeepLink({this.profile});
 
-  static const scheme = 'plezy';
+  static const scheme = ForkIdentity.urlScheme; // FORK: identité Popkino
 
   /// The profile the link names, as written in the link.
   final String? profile;

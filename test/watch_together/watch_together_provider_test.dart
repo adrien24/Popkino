@@ -426,10 +426,10 @@ void main() {
 
       expect(await world.refusal(g.provider.joinRoom('K7M-Q2Y')), owp.ErrorCode.roomNotFound);
       expect(g.provider.isInSession, isFalse);
-      expect(h.provider.participants.single.name, 'Plezy');
+      expect(h.provider.participants.single.name, 'Popkino');
     });
 
-    _roomTest('a build without a package version creates rooms as Plezy/unknown', (world) async {
+    _roomTest('a build without a package version creates rooms as Popkino/unknown', (world) async {
       // A distro package that splits the Linux bundle leaves package_info_plus
       // no version.json, and the SDK refuses a `client` of `Plezy/` (#3074).
       PackageInfo.setMockInitialValues(
@@ -445,7 +445,7 @@ void main() {
       world._members.add(h);
 
       expect(await world.settle(h.provider.createRoom()), FakeOwpRelay.code);
-      expect(h.provider.participants.single.client, 'Plezy/${AppVersion.unknown}');
+      expect(h.provider.participants.single.client, 'Popkino/${AppVersion.unknown}');
     });
 
     _roomTest('host transfer, control mode and lock; a guest is refused host commands', (world) async {

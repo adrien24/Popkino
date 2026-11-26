@@ -1,3 +1,6 @@
+import '../../../fork/fork_identity.dart';
+import '../../../fork/fork_trackers.dart';
+
 /// Bundled MDBList API credentials and endpoints.
 ///
 /// Registered as a **Device Code** app at https://mdblist.com/developer. That
@@ -9,12 +12,14 @@ class MdblistConstants {
 
   /// Registered MDBList Device Code app client ID. Public by design: the
   /// device-code grant authenticates the user, not the binary.
-  static const String clientId = 'xOUwKUPdGEbHif6aKwW2gCxCAvFx7m0Q3jX0ZxXZ';
+  // FORK: identifiants Popkino injectés au build
+  static const String clientId = ForkTrackerDefines.mdblistClientId;
 
   static const String apiBase = 'https://api.mdblist.com';
   static const String webBase = 'https://mdblist.com';
 
-  static const String appName = 'plezy';
+  // FORK: identité Popkino
+  static const String appName = ForkIdentity.appSlug;
   static const String appVersion = '2';
 
   /// OAuth endpoints. MDBList runs django-oauth-toolkit, whose routes are

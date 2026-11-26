@@ -83,7 +83,7 @@ enum ShelfSourceStore {
   /// SystemShelfPlugin.schemaVersion (duplicated here so this file compiles
   /// into RunnerTests without TopShelfProvider.swift).
   static let schemaVersion = 3
-  static let appGroupIdentifier = "group.com.edde746.plezy"
+  static let appGroupIdentifier = "group.io.github.adrien24.popkino"
   static let sourcesKey = "PlezySystemShelfSources"
   static let tokenKeychainService = "com.edde746.plezy.systemshelf.tokens"
   static let defaultMaxItems = 20

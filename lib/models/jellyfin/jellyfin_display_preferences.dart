@@ -1,3 +1,4 @@
+import 'package:plezy/fork/fork_identity.dart'; // FORK: identité Popkino
 import '../../utils/json_utils.dart';
 
 /// The MediaBrowser `DisplayPreferences` row Plezy owns.
@@ -20,7 +21,7 @@ class JellyfinDisplayPreferences {
   /// (measured — `skipForwardLength` 15000 reverted to 30000), so writing
   /// there would trash the first-party clients' skip lengths and home-section
   /// order on every save.
-  static const client = 'Plezy';
+  static const client = ForkIdentity.appName; // FORK: identité Popkino
 
   /// jellyfin-web's own key name for the same switch, so the value is
   /// recognisable to any client that goes looking — including jellyfin-web

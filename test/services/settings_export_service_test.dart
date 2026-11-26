@@ -930,12 +930,12 @@ void main() {
 
     test('exports captured JSON bytes with package version and requested file contract', () async {
       await seedActiveProfile();
-      picker.saveResult = '/tmp/plezy-settings.json';
+      picker.saveResult = '/tmp/popkino-settings.json';
 
       final path = await SettingsExportService.exportToFile();
 
-      expect(path, '/tmp/plezy-settings.json');
-      expect(picker.lastSaveName, matches(RegExp(r'^plezy-settings-\d{8}\.json$')));
+      expect(path, '/tmp/popkino-settings.json');
+      expect(picker.lastSaveName, matches(RegExp(r'^popkino-settings-\d{8}\.json$')));
       expect(picker.lastSaveExtensions, ['json']);
       final decoded = jsonDecode(utf8.decode(picker.lastSaveBytes!)) as Map<String, dynamic>;
       expect(decoded['appVersion'], '1.2.3');
