@@ -1,0 +1,251 @@
+{
+  "pageInfo": {
+    "pages": 1,
+    "pageSize": 100,
+    "results": 10,
+    "page": 1
+  },
+  "results": [
+    {
+      "id": 10,
+      "status": 2,
+      "type": "movie",
+      "is4k": false,
+      "createdAt": "2026-11-27T10:00:00.000Z",
+      "requestedBy": {
+        "id": 7,
+        "displayName": "u7"
+      },
+      "media": {
+        "id": 110,
+        "mediaType": "movie",
+        "tmdbId": 11,
+        "tvdbId": null,
+        "status": 5,
+        "status4k": 1,
+        "plexUrl": "https://app.plex.tv/desktop/#!/server/abc123machine/details?key=%2Flibrary%2Fmetadata%2F1001",
+        "ratingKey": "1001"
+      }
+    },
+    {
+      "id": 9,
+      "status": 3,
+      "type": "tv",
+      "is4k": false,
+      "createdAt": "2026-11-26T10:00:00.000Z",
+      "requestedBy": {
+        "id": 7,
+        "displayName": "u7"
+      },
+      "seasons": [
+        {
+          "id": 91,
+          "seasonNumber": 1
+        }
+      ],
+      "media": {
+        "id": 109,
+        "mediaType": "tv",
+        "tmdbId": 1399,
+        "tvdbId": 121361,
+        "status": 1,
+        "status4k": 1,
+        "seasons": [
+          {
+            "seasonNumber": 1,
+            "status": 1,
+            "status4k": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": 8,
+      "status": 5,
+      "type": "tv",
+      "is4k": false,
+      "createdAt": "2026-11-25T10:00:00.000Z",
+      "requestedBy": {
+        "id": 7,
+        "displayName": "u7"
+      },
+      "seasons": [
+        {
+          "id": 82,
+          "seasonNumber": 2
+        }
+      ],
+      "media": {
+        "id": 108,
+        "mediaType": "tv",
+        "tmdbId": 1400,
+        "tvdbId": null,
+        "status": 5,
+        "status4k": 1,
+        "plexUrl": "https://app.plex.tv/desktop/#!/server/abc123machine/details?key=%2Flibrary%2Fmetadata%2F2002",
+        "ratingKey": "2002",
+        "seasons": [
+          {
+            "seasonNumber": 1,
+            "status": 5,
+            "status4k": 1
+          },
+          {
+            "seasonNumber": 2,
+            "status": 5,
+            "status4k": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": 7,
+      "status": 5,
+      "type": "tv",
+      "is4k": false,
+      "createdAt": "2026-11-24T10:00:00.000Z",
+      "requestedBy": {
+        "id": 7,
+        "displayName": "u7"
+      },
+      "seasons": [
+        {
+          "id": 71,
+          "seasonNumber": 1
+        }
+      ],
+      "media": {
+        "id": 107,
+        "mediaType": "tv",
+        "tmdbId": 1400,
+        "tvdbId": null,
+        "status": 5,
+        "status4k": 1,
+        "plexUrl": "https://app.plex.tv/desktop/#!/server/abc123machine/details?key=%2Flibrary%2Fmetadata%2F2002",
+        "ratingKey": "2002"
+      }
+    },
+    {
+      "id": 6,
+      "status": 2,
+      "type": "movie",
+      "is4k": false,
+      "createdAt": "2026-11-23T10:00:00.000Z",
+      "requestedBy": {
+        "id": 99,
+        "displayName": "u99"
+      },
+      "media": {
+        "id": 106,
+        "mediaType": "movie",
+        "tmdbId": 12,
+        "tvdbId": null,
+        "status": 5,
+        "status4k": 1,
+        "plexUrl": "https://app.plex.tv/desktop/#!/server/abc123machine/details?key=%2Flibrary%2Fmetadata%2F1003"
+      }
+    },
+    {
+      "id": 5,
+      "status": 4,
+      "type": "movie",
+      "is4k": false,
+      "createdAt": "2026-11-22T10:00:00.000Z",
+      "requestedBy": {
+        "id": 7,
+        "displayName": "u7"
+      },
+      "media": {
+        "id": 105,
+        "mediaType": "movie",
+        "tmdbId": 13,
+        "tvdbId": null,
+        "status": 2,
+        "status4k": 1
+      }
+    },
+    {
+      "id": 4,
+      "status": 5,
+      "type": "movie",
+      "is4k": true,
+      "createdAt": "2026-11-21T10:00:00.000Z",
+      "requestedBy": {
+        "id": 7,
+        "displayName": "u7"
+      },
+      "media": {
+        "id": 104,
+        "mediaType": "movie",
+        "tmdbId": 14,
+        "tvdbId": null,
+        "status": 5,
+        "status4k": 5,
+        "plexUrl": "https://app.plex.tv/desktop/#!/server/abc123machine/details?key=%2Flibrary%2Fmetadata%2F1004",
+        "plexUrl4k": "https://app.plex.tv/desktop/#!/server/abc123machine/details?key=%2Flibrary%2Fmetadata%2F1005",
+        "ratingKey": "1004",
+        "ratingKey4k": "1005"
+      }
+    },
+    {
+      "id": 3,
+      "status": 2,
+      "type": "tv",
+      "is4k": false,
+      "createdAt": "2026-11-20T10:00:00.000Z",
+      "requestedBy": {
+        "id": 7,
+        "displayName": "u7"
+      },
+      "seasons": [
+        {
+          "id": 31,
+          "seasonNumber": 1
+        },
+        {
+          "id": 32,
+          "seasonNumber": 2
+        }
+      ],
+      "media": {
+        "id": 103,
+        "mediaType": "tv",
+        "tmdbId": 1401,
+        "tvdbId": null,
+        "status": 4,
+        "status4k": 1,
+        "plexUrl": "https://app.plex.tv/desktop/#!/server/abc123machine/details?key=%2Flibrary%2Fmetadata%2F3003"
+      }
+    },
+    {
+      "id": 2,
+      "status": 1,
+      "type": "movie",
+      "is4k": false,
+      "createdAt": "2026-11-20T10:00:00.000Z",
+      "requestedBy": {
+        "id": 7,
+        "displayName": "u7"
+      }
+    },
+    {
+      "id": 1,
+      "status": 1,
+      "type": "movie",
+      "is4k": false,
+      "createdAt": "2026-11-18T10:00:00.000Z",
+      "requestedBy": {
+        "id": 7,
+        "displayName": "u7"
+      },
+      "media": {
+        "id": 101,
+        "mediaType": "movie",
+        "tmdbId": 16,
+        "tvdbId": null,
+        "status": 3,
+        "status4k": 1
+      }
+    }
+  ]
+}

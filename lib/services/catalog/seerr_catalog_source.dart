@@ -110,6 +110,10 @@ class SeerrCatalogSource implements CatalogSource {
     );
   }
 
+  // FORK: demandes-recentes-overseerr — detail mapping (badges, server state) without the recommendations call.
+  Future<CatalogItem> catalogItemFromDetailsForFork(SeerrDetails details, MediaKind kind) async =>
+      _toDetailCatalogItem(details, kind, await _tmdbImageOrigin());
+
   /// Seerr requests key on TMDB ids, so any library item carrying one is in
   /// scope; the watchlist action stays hidden regardless
   /// ([supportsWatchlist] is false).

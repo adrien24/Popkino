@@ -2596,6 +2596,20 @@
       "notEnoughSpace": "Espace insuffisant pour télécharger la mise à jour.",
       "signatureConflict": "Cette version est signée avec une autre clé que celle installée. Désinstallez Popkino puis installez-la : vos serveurs devront être ajoutés à nouveau.",
       "installFailed": "L'installation a échoué."
+    },
+    "recentRequests": {
+      "title": "Demandes récentes",
+      "badge": {
+        "available": "Disponible",
+        "partial": "Partiel",
+        "processing": "En cours",
+        "requested": "Demandé",
+        "pending": "En attente",
+        "failed": "Échec",
+        "declined": "Refusé",
+        "deleted": "Supprimé",
+        "blocked": "Bloqué"
+      }
     }
   }
 }

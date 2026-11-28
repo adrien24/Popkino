@@ -6186,6 +6186,7 @@ class Translations$fork$en {
 	// Translations
 	late final Translations$fork$about$en about = Translations$fork$about$en.internal(_root);
 	late final Translations$fork$update$en update = Translations$fork$update$en.internal(_root);
+	late final Translations$fork$recentRequests$en recentRequests = Translations$fork$recentRequests$en.internal(_root);
 }
 
 // Path: appIcon.names
@@ -8208,6 +8209,56 @@ class Translations$fork$update$en {
 
 	/// en: 'The installation failed.'
 	String get installFailed => 'The installation failed.';
+}
+
+// Path: fork.recentRequests
+class Translations$fork$recentRequests$en {
+	Translations$fork$recentRequests$en.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// en: 'Recent requests'
+	String get title => 'Recent requests';
+
+	late final Translations$fork$recentRequests$badge$en badge = Translations$fork$recentRequests$badge$en.internal(_root);
+}
+
+// Path: fork.recentRequests.badge
+class Translations$fork$recentRequests$badge$en {
+	Translations$fork$recentRequests$badge$en.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// en: 'Available'
+	String get available => 'Available';
+
+	/// en: 'Partial'
+	String get partial => 'Partial';
+
+	/// en: 'In progress'
+	String get processing => 'In progress';
+
+	/// en: 'Requested'
+	String get requested => 'Requested';
+
+	/// en: 'Pending'
+	String get pending => 'Pending';
+
+	/// en: 'Failed'
+	String get failed => 'Failed';
+
+	/// en: 'Declined'
+	String get declined => 'Declined';
+
+	/// en: 'Deleted'
+	String get deleted => 'Deleted';
+
+	/// en: 'Blocked'
+	String get blocked => 'Blocked';
 }
 
 /// The flat map containing all translations for locale <en>.
@@ -10578,6 +10629,16 @@ extension on Translations {
 			'fork.update.notEnoughSpace' => 'Not enough space to download the update.',
 			'fork.update.signatureConflict' => 'This version is signed with a different key than the installed one. Uninstall Popkino then install it again: you will need to add your servers again.',
 			'fork.update.installFailed' => 'The installation failed.',
+			'fork.recentRequests.title' => 'Recent requests',
+			'fork.recentRequests.badge.available' => 'Available',
+			'fork.recentRequests.badge.partial' => 'Partial',
+			'fork.recentRequests.badge.processing' => 'In progress',
+			'fork.recentRequests.badge.requested' => 'Requested',
+			'fork.recentRequests.badge.pending' => 'Pending',
+			'fork.recentRequests.badge.failed' => 'Failed',
+			'fork.recentRequests.badge.declined' => 'Declined',
+			'fork.recentRequests.badge.deleted' => 'Deleted',
+			'fork.recentRequests.badge.blocked' => 'Blocked',
 			_ => null,
 		};
 	}

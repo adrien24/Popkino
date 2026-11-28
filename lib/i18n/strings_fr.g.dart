@@ -2469,6 +2469,7 @@ class _Translations$fork$fr extends Translations$fork$en {
 	// Translations
 	@override late final _Translations$fork$about$fr about = _Translations$fork$about$fr._(_root);
 	@override late final _Translations$fork$update$fr update = _Translations$fork$update$fr._(_root);
+	@override late final _Translations$fork$recentRequests$fr recentRequests = _Translations$fork$recentRequests$fr._(_root);
 }
 
 // Path: appIcon.names
@@ -3440,6 +3441,35 @@ class _Translations$fork$update$fr extends Translations$fork$update$en {
 	@override String get notEnoughSpace => 'Espace insuffisant pour télécharger la mise à jour.';
 	@override String get signatureConflict => 'Cette version est signée avec une autre clé que celle installée. Désinstallez Popkino puis installez-la : vos serveurs devront être ajoutés à nouveau.';
 	@override String get installFailed => 'L\'installation a échoué.';
+}
+
+// Path: fork.recentRequests
+class _Translations$fork$recentRequests$fr extends Translations$fork$recentRequests$en {
+	_Translations$fork$recentRequests$fr._(TranslationsFr root) : this._root = root, super.internal(root);
+
+	final TranslationsFr _root; // ignore: unused_field
+
+	// Translations
+	@override String get title => 'Demandes récentes';
+	@override late final _Translations$fork$recentRequests$badge$fr badge = _Translations$fork$recentRequests$badge$fr._(_root);
+}
+
+// Path: fork.recentRequests.badge
+class _Translations$fork$recentRequests$badge$fr extends Translations$fork$recentRequests$badge$en {
+	_Translations$fork$recentRequests$badge$fr._(TranslationsFr root) : this._root = root, super.internal(root);
+
+	final TranslationsFr _root; // ignore: unused_field
+
+	// Translations
+	@override String get available => 'Disponible';
+	@override String get partial => 'Partiel';
+	@override String get processing => 'En cours';
+	@override String get requested => 'Demandé';
+	@override String get pending => 'En attente';
+	@override String get failed => 'Échec';
+	@override String get declined => 'Refusé';
+	@override String get deleted => 'Supprimé';
+	@override String get blocked => 'Bloqué';
 }
 
 /// The flat map containing all translations for locale <fr>.
@@ -5783,6 +5813,16 @@ extension on TranslationsFr {
 			'fork.update.notEnoughSpace' => 'Espace insuffisant pour télécharger la mise à jour.',
 			'fork.update.signatureConflict' => 'Cette version est signée avec une autre clé que celle installée. Désinstallez Popkino puis installez-la : vos serveurs devront être ajoutés à nouveau.',
 			'fork.update.installFailed' => 'L\'installation a échoué.',
+			'fork.recentRequests.title' => 'Demandes récentes',
+			'fork.recentRequests.badge.available' => 'Disponible',
+			'fork.recentRequests.badge.partial' => 'Partiel',
+			'fork.recentRequests.badge.processing' => 'En cours',
+			'fork.recentRequests.badge.requested' => 'Demandé',
+			'fork.recentRequests.badge.pending' => 'En attente',
+			'fork.recentRequests.badge.failed' => 'Échec',
+			'fork.recentRequests.badge.declined' => 'Refusé',
+			'fork.recentRequests.badge.deleted' => 'Supprimé',
+			'fork.recentRequests.badge.blocked' => 'Bloqué',
 			_ => null,
 		};
 	}

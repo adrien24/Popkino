@@ -210,6 +210,11 @@ class SeerrClient {
     return SeerrRequest.fromJson(data as Map<String, dynamic>);
   }
 
+  // FORK: demandes-recentes-overseerr — raw `GET /request` page (fields the shared models omit) through the authenticated path.
+  Future<Map<String, dynamic>> getRequestsJson({required int take, required int requestedBy}) async =>
+      await _request('GET', '/request', query: {'take': take, 'skip': 0, 'sort': 'added', 'requestedBy': requestedBy})
+          as Map<String, dynamic>;
+
   // ---------- Sonarr / Radarr options (request sheet advanced pickers) ----------
 
   Future<List<SeerrServiceInstance>> getRadarrServices() => _serviceList('/service/radarr');

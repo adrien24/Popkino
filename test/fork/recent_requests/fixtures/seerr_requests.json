@@ -1,0 +1,194 @@
+{
+  "pageInfo": {
+    "pages": 1,
+    "pageSize": 100,
+    "results": 9,
+    "page": 1
+  },
+  "results": [
+    {
+      "id": 10,
+      "status": 2,
+      "type": "movie",
+      "is4k": false,
+      "createdAt": "2026-11-20T10:00:00.000Z",
+      "requestedBy": {
+        "id": 3,
+        "displayName": "u3"
+      },
+      "media": {
+        "id": 110,
+        "mediaType": "movie",
+        "tmdbId": 21,
+        "tvdbId": null,
+        "status": 5,
+        "status4k": 1,
+        "mediaUrl": "https://app.plex.tv/desktop/#!/server/abc123machine/details?key=%2Flibrary%2Fmetadata%2F500"
+      }
+    },
+    {
+      "id": 9,
+      "status": 2,
+      "type": "tv",
+      "is4k": false,
+      "createdAt": "2026-11-20T10:00:00.000Z",
+      "requestedBy": {
+        "id": 3,
+        "displayName": "u3"
+      },
+      "media": {
+        "id": 109,
+        "mediaType": "tv",
+        "tmdbId": 22,
+        "tvdbId": null,
+        "status": 5,
+        "status4k": 1,
+        "mediaUrl": "http://jelly.local:8096/web/index.html#!/details?id=jf22&context=home&serverId=srvJ",
+        "jellyfinMediaId": "jf22"
+      }
+    },
+    {
+      "id": 8,
+      "status": 2,
+      "type": "movie",
+      "is4k": false,
+      "createdAt": "2026-11-20T10:00:00.000Z",
+      "requestedBy": {
+        "id": 3,
+        "displayName": "u3"
+      },
+      "media": {
+        "id": 108,
+        "mediaType": "movie",
+        "tmdbId": 23,
+        "tvdbId": null,
+        "status": 5,
+        "status4k": 1,
+        "jellyfinMediaId": "jf23"
+      }
+    },
+    {
+      "id": 7,
+      "status": 2,
+      "type": "tv",
+      "is4k": true,
+      "createdAt": "2026-11-20T10:00:00.000Z",
+      "requestedBy": {
+        "id": 3,
+        "displayName": "u3"
+      },
+      "media": {
+        "id": 107,
+        "mediaType": "tv",
+        "tmdbId": 24,
+        "tvdbId": null,
+        "status": 5,
+        "status4k": 5,
+        "mediaUrl": "http://jelly.local:8096/web/index.html#!/details?id=jf24&context=home&serverId=srvJ",
+        "mediaUrl4k": "http://jelly.local:8096/web/index.html#!/details?id=jf24k&context=home&serverId=srvJ"
+      }
+    },
+    {
+      "id": 6,
+      "status": 2,
+      "type": "movie",
+      "is4k": false,
+      "createdAt": "2026-11-20T10:00:00.000Z",
+      "requestedBy": {
+        "id": 4,
+        "displayName": "u4"
+      },
+      "media": {
+        "id": 106,
+        "mediaType": "movie",
+        "tmdbId": 25,
+        "tvdbId": null,
+        "status": 5,
+        "status4k": 1,
+        "mediaUrl": "http://jelly.local:8096/web/index.html#!/details?id=jf25&context=home&serverId=srvJ"
+      }
+    },
+    {
+      "id": 5,
+      "status": 3,
+      "type": "movie",
+      "is4k": false,
+      "createdAt": "2026-11-20T10:00:00.000Z",
+      "requestedBy": {
+        "id": 3,
+        "displayName": "u3"
+      },
+      "media": {
+        "id": 105,
+        "mediaType": "movie",
+        "tmdbId": 26,
+        "tvdbId": null,
+        "status": 1,
+        "status4k": 1
+      }
+    },
+    {
+      "id": 4,
+      "status": 2,
+      "type": "tv",
+      "is4k": false,
+      "createdAt": "2026-11-20T10:00:00.000Z",
+      "requestedBy": {
+        "id": 3,
+        "displayName": "u3"
+      },
+      "seasons": [
+        {
+          "id": 41,
+          "seasonNumber": 1
+        }
+      ],
+      "media": {
+        "id": 104,
+        "mediaType": "tv",
+        "tmdbId": 27,
+        "tvdbId": null,
+        "status": 5,
+        "status4k": 1,
+        "ratingKey": "777"
+      }
+    },
+    {
+      "id": 3,
+      "status": 2,
+      "type": "tv",
+      "is4k": false,
+      "createdAt": "2026-11-20T10:00:00.000Z",
+      "requestedBy": {
+        "id": 3,
+        "displayName": "u3"
+      },
+      "seasons": [
+        {
+          "id": 32,
+          "seasonNumber": 2
+        }
+      ],
+      "media": {
+        "id": 103,
+        "mediaType": "tv",
+        "tmdbId": 27,
+        "tvdbId": null,
+        "status": 5,
+        "status4k": 1,
+        "ratingKey": "777"
+      }
+    },
+    {
+      "id": 2,
+      "status": 1,
+      "type": "movie",
+      "is4k": false,
+      "createdAt": "2026-11-20T10:00:00.000Z",
+      "requestedBy": {
+        "id": 3,
+        "displayName": "u3"
+      }
+    }
+  ]
+}

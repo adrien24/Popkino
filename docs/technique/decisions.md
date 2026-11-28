@@ -163,3 +163,15 @@ appel `ForkPlugins.register(flutterEngine)` de `PlezyActivity.configureFlutterEn
 distribution vit dans `android/app/src/<canal>/`, ajouté par le bloc `FORK` en fin de `build.gradle.kts` (D7
 amendé). Les canaux de méthodes nouveaux du fork sont nommés `popkino/<sujet>` ; les canaux upstream `com.plezy/*`
 restent inchangés (D3).
+
+## D15 — Accès à une capacité privée d'une classe upstream (2026-11-28)
+Contexte : `demandes-recentes-overseerr` a besoin d'un appel et d'une conversion privés de classes upstream
+(`SeerrClient._request`, `SeerrCatalogSource._toDetailCatalogItem`). Les contourner perdrait la session et la
+ré-authentification ; les dupliquer ferait diverger en silence des règles fines (états de demande, codes Overseerr ou
+Jellyseerr).
+Décision : on ajoute à la classe upstream **une** méthode publique courte, nommée d'après l'API (`getRequestsJson`) ou
+suffixée `ForFork` (`catalogItemFromDetailsForFork`), marquée `// FORK: <slug> — <raison>`, qui délègue à
+l'implémentation privée. On ne duplique pas la logique et on ne contourne pas la classe. Les modèles générés upstream
+(`*.g.dart`) ne sont pas étendus : le fork lit les champs manquants dans le JSON brut avec ses propres modèles.
+Conséquences : une garde `test/fork/` vérifie la présence de chaque méthode ; à la fusion, on la replace à la fin de sa
+section.

@@ -2596,6 +2596,20 @@
       "notEnoughSpace": "Not enough space to download the update.",
       "signatureConflict": "This version is signed with a different key than the installed one. Uninstall Popkino then install it again: you will need to add your servers again.",
       "installFailed": "The installation failed."
+    },
+    "recentRequests": {
+      "title": "Recent requests",
+      "badge": {
+        "available": "Available",
+        "partial": "Partial",
+        "processing": "In progress",
+        "requested": "Requested",
+        "pending": "Pending",
+        "failed": "Failed",
+        "declined": "Declined",
+        "deleted": "Deleted",
+        "blocked": "Blocked"
+      }
     }
   }
 }
