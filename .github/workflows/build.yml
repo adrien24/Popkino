@@ -130,31 +130,26 @@ jobs:
         if: always()
         run: rm -f android/app/upload-keystore.jks android/key.properties
 
-      # FORK: artefacts Android renommes en popkino-*
+      # FORK: artefacts Android renommes en popkino-android-<abi>-<version>.apk (APK nus, lus par la mise a jour integree)
       - name: Package APKs
         run: |
-          tar -czf popkino-android-arm64-v8a.tar.gz -C build/app/outputs/flutter-apk app-arm64-v8a-release.apk --transform 's/app-arm64-v8a-release.apk/popkino.apk/'
-          tar -czf popkino-android-armeabi-v7a.tar.gz -C build/app/outputs/flutter-apk app-armeabi-v7a-release.apk --transform 's/app-armeabi-v7a-release.apk/popkino.apk/'
-          tar -czf popkino-android-x86_64.tar.gz -C build/app/outputs/flutter-apk app-x86_64-release.apk --transform 's/app-x86_64-release.apk/popkino.apk/'
+          VERSION=$(grep '^version:' pubspec.yaml | sed -E 's/^version: *([0-9.]+).*/\1/')
+          cp build/app/outputs/flutter-apk/app-arm64-v8a-release.apk "popkino-android-arm64-v8a-$VERSION.apk"
+          cp build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk "popkino-android-armeabi-v7a-$VERSION.apk"
+          cp build/app/outputs/flutter-apk/app-x86_64-release.apk "popkino-android-x86_64-$VERSION.apk"
 
       # FORK: artefacts Android renommes en popkino-*
       - name: Attest APKs
         uses: actions/attest-build-provenance@0f67c3f4856b2e3261c31976d6725780e5e4c373 # v4
         with:
-          subject-path: |
-            popkino-android-arm64-v8a.tar.gz
-            popkino-android-armeabi-v7a.tar.gz
-            popkino-android-x86_64.tar.gz
+          subject-path: popkino-android-*.apk
 
       # FORK: artefacts Android renommes en popkino-*
       - name: Upload APKs
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: android-apk
-          path: |
-            popkino-android-arm64-v8a.tar.gz
-            popkino-android-armeabi-v7a.tar.gz
-            popkino-android-x86_64.tar.gz
+          path: popkino-android-*.apk
 
   build-ios:
     needs: validate-trusted-ref
@@ -1134,9 +1129,7 @@ jobs:
           {
             echo 'files<<EOF'
             if [ "${{ inputs.build_android }}" = "true" ]; then
-              echo artifacts/android-apk/popkino-android-arm64-v8a.tar.gz
-              echo artifacts/android-apk/popkino-android-armeabi-v7a.tar.gz
-              echo artifacts/android-apk/popkino-android-x86_64.tar.gz
+              echo 'artifacts/android-apk/popkino-android-*.apk'
             fi
             if [ "${{ inputs.build_ios }}" = "true" ]; then
               echo artifacts/ios-ipa/popkino-ios.ipa

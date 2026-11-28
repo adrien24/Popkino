@@ -1,5 +1,7 @@
 import 'package:plezy/fork/fork_features.dart'; // FORK: service Plezy retiré
 import 'package:plezy/fork/fork_identity.dart'; // FORK: identité Popkino
+import 'package:plezy/fork/update/fork_update_controller.dart'; // FORK: bouton-mise-a-jour
+import 'package:plezy/fork/update/sideload_flags.dart'; // FORK: bouton-mise-a-jour
 import 'dart:async';
 import 'dart:io' show Directory, Platform, ProcessInfo;
 import 'dart:ui' show AppExitResponse;
@@ -1749,6 +1751,10 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
         // can manage stored Jellyfin/Plex connections without re-creating
         // the registry per-call site.
         Provider<SettingsService>.value(value: widget.settings),
+        if (kForkSideloadUpdates)
+          ChangeNotifierProvider<ForkUpdateController>.value(
+            value: ForkUpdateController.instance,
+          ), // FORK: bouton-mise-a-jour — update availability, app-global
         Provider<StorageService>.value(value: widget.storage),
         Provider<AppDatabase>.value(value: _appDatabase),
         Provider<ConnectionRegistry>.value(value: _connections),

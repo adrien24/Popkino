@@ -125,3 +125,41 @@ fichier (`title` de la ligne serveur ou du conteneur), jamais les libellés calc
 `extendedDisplayTitle`).
 Conséquences : un nouveau besoin de choix de piste s'ajoute à ce fichier ; une détection de l'installation audio
 (par exemple PCM 5.1 via `AudioTrack.isDirectPlaybackSupported`) serait une fonctionnalité à part, testée sur matériel.
+
+## D7 (amendement) — Le manifeste diffère entre canaux, toujours sans flavor (2026-11-28)
+Contexte : `bouton-mise-a-jour` ajoute `REQUEST_INSTALL_PACKAGES` et un installeur Kotlin, interdits sur Google Play.
+Un flavor serait une seconde bascule, désynchronisable avec `ENABLE_UPDATE_CHECK`.
+Décision : `ENABLE_UPDATE_CHECK=true` reste l'unique bascule. Gradle la lit dans `-Pdart-defines` (ou
+`-PpopkinoSideload=true` pour `./gradlew` direct en CI) et ajoute alors `android/app/src/sideload/` (manifeste avec la
+permission, Kotlin). Sinon, il ajoute `src/nosideload/` (no-op). Une tâche `bundle*` ou un build `AMAZON` avec ce
+define échoue. Le choix est sûr par défaut : sans le define, ni permission, ni code d'installation.
+Conséquences : `scripts/fork/test_sideload_isolation.py` vérifie que rien de l'installeur ne sort de `src/sideload*/`.
+La CI teste la variante sideload (`testDebugUnitTest -PpopkinoSideload=true`) et compile l'autre (`lintDebug`).
+
+## D10 (amendement) — Numéro de build (2026-11-28)
+Contexte : avec `--split-per-abi`, versionCode = ABI × 1000 + N ; des APK 0.2.0+5 sont déjà installés.
+Décision : `N` ne redescend jamais sous le plus grand N déjà publié (5 au 2026-11-28 ; la 1.0.0 sera au moins `+6`)
+et reste inférieur à 1000. Le tag reste `X.Y.Z` sans préfixe ; les anciens tags `v0.x` restent et sont acceptés par
+la vérification. Les APK de release s'appellent `popkino-android-<abi>-<X.Y.Z>.apk` (APK nus, plus de `.tar.gz`).
+
+## D13 — Fonctionnalités du fork : dossier, état, constante éliminable (2026-11-28)
+Contexte : `bouton-mise-a-jour` est la première fonctionnalité du fork à plusieurs fichiers, avec un état et un
+code interdit dans les versions store.
+Décision :
+- une fonctionnalité du fork de plus de 2 fichiers vit dans `lib/fork/<sujet>/` (tests dans `test/fork/<sujet>/`) ;
+- son état global est un `ChangeNotifier` singleton, exposé derrière la même constante (collection-if
+  `if (k…) ChangeNotifierProvider.value(...)`) dans le `MultiProvider` de `lib/main.dart` (une ligne `// FORK:`).
+  Le singleton n'est jamais référencé hors d'un test de cette constante, sinon l'AOT le garde dans les autres builds. Il est lu dans les fichiers upstream par
+  `context.watch<T?>()` ou `read<T?>()` (nullable), pour que les tests upstream sans ce provider restent verts ;
+- un code réservé à une distribution est gardé par une constante
+  `const bool k… = bool.fromEnvironment(...)`, testée en tête de chaque point d'entrée, avec un forçage de test
+  limité à `kDebugMode`. L'AOT l'élimine alors des autres builds, ce qui se vérifie par `strings libapp.so`.
+Conséquences : un crochet upstream reste une ligne (D11) ; une garde `test/fork/` vérifie les crochets et le test de
+constante.
+
+## D14 — Code natif Android du fork (2026-11-28)
+Décision : le Kotlin propre au fork vit dans le package `com.edde746.plezy.fork`. Il est enregistré par l'unique
+appel `ForkPlugins.register(flutterEngine)` de `PlezyActivity.configureFlutterEngine`. Le code propre à un canal de
+distribution vit dans `android/app/src/<canal>/`, ajouté par le bloc `FORK` en fin de `build.gradle.kts` (D7
+amendé). Les canaux de méthodes nouveaux du fork sont nommés `popkino/<sujet>` ; les canaux upstream `com.plezy/*`
+restent inchangés (D3).

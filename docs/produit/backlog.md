@@ -1,23 +1,27 @@
 # Backlog
 
-Dernière mise à jour : 2026-11-26
+Dernière mise à jour : 2026-11-28
 
 | # | Slug | Besoin (une phrase) | Priorité | Statut |
 |---|------|---------------------|----------|--------|
 | 1 | nouvelle-identite | Renommer l'app en Popkino (logo provisoire violet), retirer les services Plezy (Trakt, Simkl et MDBList reportés à `services-suivi`), sur toutes les plateformes publiées sur GitHub | Must | en recette |
-| 7 | langues-preferees | Lancer chaque vidéo dans la langue audio et de sous-titres préférées du compte (anglais sous-titré français), même si le serveur se souvient d'une autre piste | Must | en recette |
+| 7 | langues-preferees | Lancer chaque vidéo dans la langue audio et de sous-titres préférées du compte (anglais sous-titré français), même si le serveur se souvient d'une autre piste | Must | livré |
+| 13 | bouton-mise-a-jour | Installer une nouvelle version publiée sur GitHub depuis l'accueil, à la télécommande, sans ordinateur ni navigateur (version GitHub seulement, jamais dans les versions store) | Should | spec validée |
 | 2 | logo-definitif | Remplacer le logo provisoire par un vrai logo (icônes, bannière TV, visuels des stores) | Should | idée |
 | 3 | publication-stores | Publier l'app sur Google Play (TV, mobile) et Amazon Appstore (Fire TV) : compte, fiche, politique de confidentialité, test fermé | Should | idée |
 | 4 | services-suivi | Réactiver les services de suivi avec nos propres enregistrements : d'abord Trakt, Simkl et MDBList (connexion par code, sans serveur), puis MyAnimeList / AniList (nécessite d'héberger un serveur de connexion) | Could | idée |
 | 5 | traductions-fork | Traduire dans toutes les langues de l'app les phrases ajoutées par le fork (aujourd'hui en français et en anglais seulement) | Could | idée |
 | 6 | verification-developpeur-android | Enregistrer l'app auprès de Google (compte développeur, pièce d'identité) pour que les téléphones installent l'APK GitHub sans manipulation après la généralisation de 2027 | Should | idée |
 | 8 | langue-serie-plex | Respecter la langue audio/sous-titres réglée sur une série directement dans Plex (ex. anime en japonais) au lieu de celle du compte | Could | idée |
-| 9 | meilleure-piste-audio | Quand plusieurs pistes audio sont dans la langue préférée, prendre la meilleure (5.1 plutôt que stéréo) au lieu de la première | Should | en recette |
+| 9 | meilleure-piste-audio | Quand plusieurs pistes audio sont dans la langue préférée, prendre la meilleure (5.1 plutôt que stéréo) au lieu de la première | Should | livré |
 | 10 | reglage-sous-titres-reinitialise | Couper « Choisir l'audio par langue » ne doit pas faire passer « Activer les sous-titres » en « Sélection manuelle » sans le dire | Could | idée |
-| 11 | sous-titres-mal-etiquetes | Reconnaître des sous-titres dont le titre dit « French » mais dont la langue indiquée dans le fichier est fausse | Could | en recette |
+| 11 | sous-titres-mal-etiquetes | Reconnaître des sous-titres dont le titre dit « French » mais dont la langue indiquée dans le fichier est fausse | Could | livré |
 | 12 | titres-autres-langues | Reconnaître dans le nom des pistes de sous-titres d'autres langues que le français et l'anglais (suite de `sous-titres-mal-etiquetes`) | Could | idée |
 
 Notes :
+- `bouton-mise-a-jour` (2026-11-28) : spec validée (bouton seulement si mise à jour, pré-versions proposées, fenêtre de démarrage gardée, téléphone et TV). Fonction temporaire : à retirer lors de `publication-stores`. Refusé par Plezy (#2868, #1782 fermés ; #3125 sans réponse), donc fonction propre à Popkino. Constat : la vérification actuelle ignore les pré-versions (0.1.0 et 0.2.0 n'ont jamais été proposées) et sa fenêtre ouvre un navigateur, absent des TV. La 1re version signée avec la clé définitive (A2) ne pourra pas s'installer par-dessus la 0.2.0.
+- `langues-preferees`, `meilleure-piste-audio`, `sous-titres-mal-etiquetes` (2026-11-27) : livrés, fusionnés dans
+  main (94b778407) et publiés dans la pré-version de test v0.2.0, installée sur la Fire Stick.
 - `nouvelle-identite` (2026-11-26) : en recette. Reste avant « livré » : clés A2 (Android) et A3 (Mac/Windows), tâches
   T14 et T16 (version 1.0.0, README, licence), première release (A6) et tests
   sur appareils (A7).

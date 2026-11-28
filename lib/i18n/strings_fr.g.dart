@@ -2468,6 +2468,7 @@ class _Translations$fork$fr extends Translations$fork$en {
 
 	// Translations
 	@override late final _Translations$fork$about$fr about = _Translations$fork$about$fr._(_root);
+	@override late final _Translations$fork$update$fr update = _Translations$fork$update$fr._(_root);
 }
 
 // Path: appIcon.names
@@ -3412,6 +3413,33 @@ class _Translations$fork$about$fr extends Translations$fork$about$en {
 	@override String get license => 'Licence';
 	@override String get sourceCode => 'Code source';
 	@override String get sourceCodeQrHint => 'Scannez ce code avec votre téléphone pour ouvrir l\'adresse';
+}
+
+// Path: fork.update
+class _Translations$fork$update$fr extends Translations$fork$update$en {
+	_Translations$fork$update$fr._(TranslationsFr root) : this._root = root, super.internal(root);
+
+	final TranslationsFr _root; // ignore: unused_field
+
+	// Translations
+	@override String get buttonLabel => 'Mise à jour disponible';
+	@override String installedVersion({required Object version}) => 'Version installée : ${version}';
+	@override String get downloadAndInstall => 'Télécharger et installer';
+	@override String get install => 'Installer';
+	@override String readyToInstall({required Object version}) => 'Version ${version} prête à installer';
+	@override String progress({required Object percent}) => '${percent} %';
+	@override String get verifying => 'Vérification…';
+	@override String get permissionExplanation => 'Pour installer la mise à jour, autorisez Popkino à installer des applications.';
+	@override String get openSettings => 'Ouvrir les réglages';
+	@override String get permissionPathUnknownApps => 'Choisissez Popkino dans la liste, puis activez l\'autorisation.';
+	@override String get permissionPathDeveloper => 'Options pour les développeurs > Installer des applis inconnues > Popkino';
+	@override String get permissionPathGeneric => 'Paramètres > Ma Fire TV > Options pour les développeurs > Installer des applis inconnues > Popkino (ou Paramètres > Sécurité > Sources inconnues)';
+	@override String get permissionDenied => 'Installation impossible sans autorisation.';
+	@override String get installing => 'Suivez les instructions à l\'écran pour installer la mise à jour.';
+	@override String get downloadFailed => 'Le téléchargement a échoué. Vérifiez la connexion.';
+	@override String get notEnoughSpace => 'Espace insuffisant pour télécharger la mise à jour.';
+	@override String get signatureConflict => 'Cette version est signée avec une autre clé que celle installée. Désinstallez Popkino puis installez-la : vos serveurs devront être ajoutés à nouveau.';
+	@override String get installFailed => 'L\'installation a échoué.';
 }
 
 /// The flat map containing all translations for locale <fr>.
@@ -5737,6 +5765,24 @@ extension on TranslationsFr {
 			'fork.about.license' => 'Licence',
 			'fork.about.sourceCode' => 'Code source',
 			'fork.about.sourceCodeQrHint' => 'Scannez ce code avec votre téléphone pour ouvrir l\'adresse',
+			'fork.update.buttonLabel' => 'Mise à jour disponible',
+			'fork.update.installedVersion' => ({required Object version}) => 'Version installée : ${version}',
+			'fork.update.downloadAndInstall' => 'Télécharger et installer',
+			'fork.update.install' => 'Installer',
+			'fork.update.readyToInstall' => ({required Object version}) => 'Version ${version} prête à installer',
+			'fork.update.progress' => ({required Object percent}) => '${percent} %',
+			'fork.update.verifying' => 'Vérification…',
+			'fork.update.permissionExplanation' => 'Pour installer la mise à jour, autorisez Popkino à installer des applications.',
+			'fork.update.openSettings' => 'Ouvrir les réglages',
+			'fork.update.permissionPathUnknownApps' => 'Choisissez Popkino dans la liste, puis activez l\'autorisation.',
+			'fork.update.permissionPathDeveloper' => 'Options pour les développeurs > Installer des applis inconnues > Popkino',
+			'fork.update.permissionPathGeneric' => 'Paramètres > Ma Fire TV > Options pour les développeurs > Installer des applis inconnues > Popkino (ou Paramètres > Sécurité > Sources inconnues)',
+			'fork.update.permissionDenied' => 'Installation impossible sans autorisation.',
+			'fork.update.installing' => 'Suivez les instructions à l\'écran pour installer la mise à jour.',
+			'fork.update.downloadFailed' => 'Le téléchargement a échoué. Vérifiez la connexion.',
+			'fork.update.notEnoughSpace' => 'Espace insuffisant pour télécharger la mise à jour.',
+			'fork.update.signatureConflict' => 'Cette version est signée avec une autre clé que celle installée. Désinstallez Popkino puis installez-la : vos serveurs devront être ajoutés à nouveau.',
+			'fork.update.installFailed' => 'L\'installation a échoué.',
 			_ => null,
 		};
 	}

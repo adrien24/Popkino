@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../fork/update/fork_update_hooks.dart'; // FORK: bouton-mise-a-jour
 import '../i18n/strings.g.dart';
 import '../services/update_service.dart';
 import '../widgets/dialog_action_button.dart';
@@ -13,6 +14,8 @@ Future<void> showUpdateAvailableDialog(
   required String dismissLabel,
   bool showSkipVersion = false,
 }) {
+  // FORK: bouton-mise-a-jour — download and install the APK instead of opening the browser (null = upstream)
+  if (ForkUpdateHooks.showDialog(context, updateInfo, showSkipVersion: showSkipVersion) case final fork?) return fork;
   return showScopedDialog<void>(
     context: context,
     builder: (dialogContext) {

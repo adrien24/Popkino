@@ -2576,6 +2576,26 @@
       "license": "Licence",
       "sourceCode": "Code source",
       "sourceCodeQrHint": "Scannez ce code avec votre téléphone pour ouvrir l'adresse"
+    },
+    "update": {
+      "buttonLabel": "Mise à jour disponible",
+      "installedVersion": "Version installée : ${version}",
+      "downloadAndInstall": "Télécharger et installer",
+      "install": "Installer",
+      "readyToInstall": "Version ${version} prête à installer",
+      "progress": "${percent} %",
+      "verifying": "Vérification…",
+      "permissionExplanation": "Pour installer la mise à jour, autorisez Popkino à installer des applications.",
+      "openSettings": "Ouvrir les réglages",
+      "permissionPathUnknownApps": "Choisissez Popkino dans la liste, puis activez l'autorisation.",
+      "permissionPathDeveloper": "Options pour les développeurs > Installer des applis inconnues > Popkino",
+      "permissionPathGeneric": "Paramètres > Ma Fire TV > Options pour les développeurs > Installer des applis inconnues > Popkino (ou Paramètres > Sécurité > Sources inconnues)",
+      "permissionDenied": "Installation impossible sans autorisation.",
+      "installing": "Suivez les instructions à l'écran pour installer la mise à jour.",
+      "downloadFailed": "Le téléchargement a échoué. Vérifiez la connexion.",
+      "notEnoughSpace": "Espace insuffisant pour télécharger la mise à jour.",
+      "signatureConflict": "Cette version est signée avec une autre clé que celle installée. Désinstallez Popkino puis installez-la : vos serveurs devront être ajoutés à nouveau.",
+      "installFailed": "L'installation a échoué."
     }
   }
 }

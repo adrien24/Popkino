@@ -6185,6 +6185,7 @@ class Translations$fork$en {
 
 	// Translations
 	late final Translations$fork$about$en about = Translations$fork$about$en.internal(_root);
+	late final Translations$fork$update$en update = Translations$fork$update$en.internal(_root);
 }
 
 // Path: appIcon.names
@@ -8144,6 +8145,69 @@ class Translations$fork$about$en {
 
 	/// en: 'Scan this code with your phone to open the address'
 	String get sourceCodeQrHint => 'Scan this code with your phone to open the address';
+}
+
+// Path: fork.update
+class Translations$fork$update$en {
+	Translations$fork$update$en.internal(this._root);
+
+	final Translations _root; // ignore: unused_field
+
+	// Translations
+
+	/// en: 'Update available'
+	String get buttonLabel => 'Update available';
+
+	/// en: 'Installed version: ${version}'
+	String installedVersion({required Object version}) => 'Installed version: ${version}';
+
+	/// en: 'Download and install'
+	String get downloadAndInstall => 'Download and install';
+
+	/// en: 'Install'
+	String get install => 'Install';
+
+	/// en: 'Version ${version} ready to install'
+	String readyToInstall({required Object version}) => 'Version ${version} ready to install';
+
+	/// en: '${percent} %'
+	String progress({required Object percent}) => '${percent} %';
+
+	/// en: 'Verifying…'
+	String get verifying => 'Verifying…';
+
+	/// en: 'To install the update, allow Popkino to install apps.'
+	String get permissionExplanation => 'To install the update, allow Popkino to install apps.';
+
+	/// en: 'Open settings'
+	String get openSettings => 'Open settings';
+
+	/// en: 'Choose Popkino in the list, then turn on the permission.'
+	String get permissionPathUnknownApps => 'Choose Popkino in the list, then turn on the permission.';
+
+	/// en: 'Developer options > Install unknown apps > Popkino'
+	String get permissionPathDeveloper => 'Developer options > Install unknown apps > Popkino';
+
+	/// en: 'Settings > My Fire TV > Developer options > Install unknown apps > Popkino (or Settings > Security > Unknown sources)'
+	String get permissionPathGeneric => 'Settings > My Fire TV > Developer options > Install unknown apps > Popkino (or Settings > Security > Unknown sources)';
+
+	/// en: 'Installation is not possible without permission.'
+	String get permissionDenied => 'Installation is not possible without permission.';
+
+	/// en: 'Follow the on-screen instructions to install the update.'
+	String get installing => 'Follow the on-screen instructions to install the update.';
+
+	/// en: 'The download failed. Check your connection.'
+	String get downloadFailed => 'The download failed. Check your connection.';
+
+	/// en: 'Not enough space to download the update.'
+	String get notEnoughSpace => 'Not enough space to download the update.';
+
+	/// en: 'This version is signed with a different key than the installed one. Uninstall Popkino then install it again: you will need to add your servers again.'
+	String get signatureConflict => 'This version is signed with a different key than the installed one. Uninstall Popkino then install it again: you will need to add your servers again.';
+
+	/// en: 'The installation failed.'
+	String get installFailed => 'The installation failed.';
 }
 
 /// The flat map containing all translations for locale <en>.
@@ -10496,6 +10560,24 @@ extension on Translations {
 			'fork.about.license' => 'License',
 			'fork.about.sourceCode' => 'Source code',
 			'fork.about.sourceCodeQrHint' => 'Scan this code with your phone to open the address',
+			'fork.update.buttonLabel' => 'Update available',
+			'fork.update.installedVersion' => ({required Object version}) => 'Installed version: ${version}',
+			'fork.update.downloadAndInstall' => 'Download and install',
+			'fork.update.install' => 'Install',
+			'fork.update.readyToInstall' => ({required Object version}) => 'Version ${version} ready to install',
+			'fork.update.progress' => ({required Object percent}) => '${percent} %',
+			'fork.update.verifying' => 'Verifying…',
+			'fork.update.permissionExplanation' => 'To install the update, allow Popkino to install apps.',
+			'fork.update.openSettings' => 'Open settings',
+			'fork.update.permissionPathUnknownApps' => 'Choose Popkino in the list, then turn on the permission.',
+			'fork.update.permissionPathDeveloper' => 'Developer options > Install unknown apps > Popkino',
+			'fork.update.permissionPathGeneric' => 'Settings > My Fire TV > Developer options > Install unknown apps > Popkino (or Settings > Security > Unknown sources)',
+			'fork.update.permissionDenied' => 'Installation is not possible without permission.',
+			'fork.update.installing' => 'Follow the on-screen instructions to install the update.',
+			'fork.update.downloadFailed' => 'The download failed. Check your connection.',
+			'fork.update.notEnoughSpace' => 'Not enough space to download the update.',
+			'fork.update.signatureConflict' => 'This version is signed with a different key than the installed one. Uninstall Popkino then install it again: you will need to add your servers again.',
+			'fork.update.installFailed' => 'The installation failed.',
 			_ => null,
 		};
 	}
