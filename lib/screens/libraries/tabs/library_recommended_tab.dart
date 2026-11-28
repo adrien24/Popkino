@@ -6,6 +6,7 @@ import 'package:material_symbols_icons/symbols.dart';
 
 import '../../../focus/hub_vertical_navigation.dart';
 import '../../../focus/locked_hub_controller.dart';
+import '../../../fork/recent_requests/recent_requests_shelf.dart'; // FORK: demandes-recentes-overseerr
 import '../../../i18n/strings.g.dart';
 import '../../../media/media_hub.dart';
 import '../../../media/media_item.dart';
@@ -272,14 +273,18 @@ class _LibraryRecommendedTabState extends BaseLibraryTabState<MediaHub, LibraryR
   // Extra top padding for focus decoration (scale + border extends beyond item bounds)
   static const double _focusDecorationPadding = 8.0;
 
-  @override
-  Widget buildContent(List<MediaHub> items) {
+  @override // FORK: demandes-recentes-overseerr
+  Widget buildContent(List<MediaHub> items) => // FORK: demandes-recentes-overseerr
+      ForkRecentRequestsShelf(library: widget.library, hubs: items, builder: _buildContentWith); // FORK: demandes-recentes-overseerr
+
+  Widget _buildContentWith(BuildContext context, List<MediaHub> items, ForkRequestActivator fork) {
+    // FORK: demandes-recentes-overseerr
     final hubKeys = _keysForHubs(items);
 
     if (PlatformDetector.isTV()) {
       return SettingsBuilder(
         prefs: const [SettingsService.hideSpoilers, SettingsService.libraryDensity, SettingsService.episodePosterMode],
-        builder: (context) => _buildTvContent(items),
+        builder: (context) => _buildTvContent(items, fork), // FORK: demandes-recentes-overseerr
       );
     }
 
@@ -306,7 +311,8 @@ class _LibraryRecommendedTabState extends BaseLibraryTabState<MediaHub, LibraryR
                   key: hubKeys[index],
                   hub: hub,
                   focusMemory: _hubFocusMemory,
-                  icon: hubIconFor(hub),
+                  icon: fork.iconFor(hub) ?? hubIconFor(hub), // FORK: demandes-recentes-overseerr
+                  onItemTap: fork.tapFor(context, hub), // FORK: demandes-recentes-overseerr
                   isInContinueWatching: isContinueWatching,
                   usesContinueWatchingAction: usesContinueWatchingAction,
                   onRefresh: updateItem,
@@ -324,7 +330,8 @@ class _LibraryRecommendedTabState extends BaseLibraryTabState<MediaHub, LibraryR
     );
   }
 
-  Widget _buildTvContent(List<MediaHub> items) {
+  Widget _buildTvContent(List<MediaHub> items, ForkRequestActivator fork) {
+    // FORK: demandes-recentes-overseerr
     final tvHubs = items.where((hub) => hub.items.isNotEmpty).toList();
     return TvSpotlightScaffold(
       hubs: tvHubs,
@@ -342,7 +349,8 @@ class _LibraryRecommendedTabState extends BaseLibraryTabState<MediaHub, LibraryR
                 key: _tvBrowseRailKey,
                 hubs: tvHubs,
                 focusMemory: _hubFocusMemory,
-                iconForHub: (hub, _) => hubIconFor(hub),
+                iconForHub: (hub, _) => fork.iconFor(hub) ?? hubIconFor(hub), // FORK: demandes-recentes-overseerr
+                onActivateItem: (hub, item) => fork.activate(context, hub, item), // FORK: demandes-recentes-overseerr
                 onFocusedItemChanged: _setSpotlightItem,
                 onRefresh: updateItem,
                 onRemoveFromContinueWatching: _refreshContinueWatching,

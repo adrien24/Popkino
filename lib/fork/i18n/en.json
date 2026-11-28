@@ -9,6 +9,20 @@
       "sourceCode": "Source code",
       "sourceCodeQrHint": "Scan this code with your phone to open the address"
     },
+    "recentRequests": {
+      "title": "Recent requests",
+      "badge": {
+        "available": "Available",
+        "partial": "Partial",
+        "processing": "In progress",
+        "requested": "Requested",
+        "pending": "Pending",
+        "failed": "Failed",
+        "declined": "Declined",
+        "deleted": "Deleted",
+        "blocked": "Blocked"
+      }
+    },
     "update": {
       "buttonLabel": "Update available",
       "installedVersion": "Installed version: ${version}",

@@ -2596,6 +2596,20 @@
       "notEnoughSpace": "",
       "signatureConflict": "",
       "installFailed": ""
+    },
+    "recentRequests": {
+      "title": "",
+      "badge": {
+        "available": "",
+        "partial": "",
+        "processing": "",
+        "requested": "",
+        "pending": "",
+        "failed": "",
+        "declined": "",
+        "deleted": "",
+        "blocked": ""
+      }
     }
   }
 }

@@ -39,6 +39,7 @@ import '../i18n/strings.g.dart';
 import 'media_context_menu.dart';
 import 'media_card_list_layout.dart';
 import 'backend_badge.dart';
+import '../fork/recent_requests/recent_request_badge.dart'; // FORK: demandes-recentes-overseerr
 import 'optimized_media_image.dart';
 
 const _failedPosterUrlCacheLimit = 512;
@@ -647,7 +648,11 @@ class MediaCardState extends State<MediaCard> with ContextMenuTapMixin<MediaCard
     );
     final overlays = <Widget>[
       if (item is MediaItem && _showsWatchedIndicator(item)) WatchedIndicator(item: item),
-      if (badgeLabels.isNotEmpty) _CatalogBadges(labels: badgeLabels),
+      // FORK: demandes-recentes-overseerr — single short colored badge in the recent-requests row
+      if (forkPosterBadge(item) case final Widget forkBadge) // FORK: demandes-recentes-overseerr
+        forkBadge // FORK: demandes-recentes-overseerr
+      else if (badgeLabels.isNotEmpty) // FORK: demandes-recentes-overseerr
+        _CatalogBadges(labels: badgeLabels), // FORK: demandes-recentes-overseerr
     ];
     return ExcludeSemantics(
       child: _CatalogFocusBorder(

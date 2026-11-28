@@ -9,6 +9,20 @@
       "sourceCode": "Code source",
       "sourceCodeQrHint": "Scannez ce code avec votre téléphone pour ouvrir l'adresse"
     },
+    "recentRequests": {
+      "title": "Demandes récentes",
+      "badge": {
+        "available": "Disponible",
+        "partial": "Partiel",
+        "processing": "En cours",
+        "requested": "Demandé",
+        "pending": "En attente",
+        "failed": "Échec",
+        "declined": "Refusé",
+        "deleted": "Supprimé",
+        "blocked": "Bloqué"
+      }
+    },
     "update": {
       "buttonLabel": "Mise à jour disponible",
       "installedVersion": "Version installée : ${version}",
