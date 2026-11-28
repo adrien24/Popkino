@@ -44,4 +44,30 @@ void main() {
       expect(line, contains('FORK: demandes-recentes-overseerr'), reason: 'line without FORK marker: $line');
     }
   });
+
+  test('library_recommended_tab.dart carries the placeholder hooks', () {
+    final lines = File('lib/screens/libraries/tabs/library_recommended_tab.dart').readAsLinesSync();
+
+    for (final needle in ['forkWarmUpRecentRequestCounts(', 'forkIsSkeletonItem(item)', 'forkSpotlightHubs(tvHubs)']) {
+      final matching = lines.where((l) => l.contains(needle)).toList();
+      expect(matching, isNotEmpty, reason: 'missing hook: $needle');
+      for (final line in matching) {
+        expect(line, contains('FORK: demandes-recentes-sans-saut'), reason: 'line without FORK marker: $line');
+      }
+    }
+  });
+
+  test('media_card.dart carries the skeleton hook, each fork line marked', () {
+    final lines = File('lib/widgets/media_card.dart').readAsLinesSync();
+    final source = lines.join('\n');
+
+    expect(source, contains('forkSkeletonCard(context, widget.item'));
+    expect(source, contains('recent_requests_skeleton.dart'));
+
+    for (final needle in ['forkSkeletonCard(context, widget.item', 'recent_requests_skeleton.dart']) {
+      for (final line in lines.where((l) => l.contains(needle))) {
+        expect(line, contains('FORK: demandes-recentes-sans-saut'), reason: 'line without FORK marker: $line');
+      }
+    }
+  });
 }

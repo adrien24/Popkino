@@ -40,6 +40,7 @@ import 'media_context_menu.dart';
 import 'media_card_list_layout.dart';
 import 'backend_badge.dart';
 import '../fork/recent_requests/recent_request_badge.dart'; // FORK: demandes-recentes-overseerr
+import '../fork/recent_requests/recent_requests_skeleton.dart'; // FORK: demandes-recentes-sans-saut
 import 'optimized_media_image.dart';
 
 const _failedPosterUrlCacheLimit = 512;
@@ -462,6 +463,9 @@ class MediaCardState extends State<MediaCard> with ContextMenuTapMixin<MediaCard
 
   @override
   Widget build(BuildContext context) {
+    // dart format off
+    if (forkSkeletonCard(context, widget.item, width: widget.width, height: widget.height, fullBleed: widget.fullBleedImage) case final Widget skeleton) return skeleton; // FORK: demandes-recentes-sans-saut — loading placeholder of the recent-requests row
+    // dart format on
     return SettingsBuilder(
       prefs: const [
         SettingsService.viewMode,
