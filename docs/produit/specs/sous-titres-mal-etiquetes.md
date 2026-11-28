@@ -85,3 +85,7 @@ Décisions de l'utilisateur (2026-11-26) :
 - Précision de conception sans effet visible : une piste que le serveur ne décrit pas garde sa langue indiquée.
 
 Reste avant « livré » : commit et fusion validés par l'utilisateur, version publiée.
+
+## Livraison
+
+Livré le 2026-11-27 : fusionné dans main (94b778407), pré-version de test v0.2.0.

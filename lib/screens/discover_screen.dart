@@ -65,6 +65,7 @@ import 'libraries/content_state_builder.dart';
 import 'libraries/state_messages.dart';
 import 'main_screen.dart';
 import '../navigation/settings_shortcut.dart';
+import '../fork/update/fork_update_action.dart'; // FORK: bouton-mise-a-jour
 import '../watch_together/watch_together.dart';
 import '../providers/companion_remote_provider.dart';
 import '../widgets/companion_remote/remote_session_dialog.dart';
@@ -924,6 +925,10 @@ class _DiscoverScreenState extends State<DiscoverScreen>
                       ],
                     ),
                   ),
+                  forkUpdateAction(
+                    context,
+                    iconColor: foregroundColor,
+                  ), // FORK: bouton-mise-a-jour — update button next to Watch Together
                   // Companion Remote
                   FocusableAction(
                     onPressed: openCompanionRemote,

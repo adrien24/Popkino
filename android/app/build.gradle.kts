@@ -1,4 +1,5 @@
 import java.io.FileInputStream
+import java.util.Base64 // FORK: bouton-mise-a-jour
 import java.util.Properties
 import java.util.UUID
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
@@ -525,4 +526,32 @@ dependencies {
   testImplementation("androidx.work:work-testing:2.11.0")
   androidTestImplementation("androidx.test:runner:1.7.0")
   androidTestImplementation("androidx.test.ext:junit:1.3.0")
+}
+
+// FORK: bouton-mise-a-jour — the sideload APK installer (permission + Kotlin) ships only when the dart-defines
+// contain ENABLE_UPDATE_CHECK=true (GitHub APKs). Store builds never get it (Google Play / Amazon policy).
+val popkinoSideload: Boolean = run {
+  val defines = (findProperty("dart-defines") as String?).orEmpty()
+    .split(',').filter(String::isNotBlank)
+    .map { String(Base64.getDecoder().decode(it), Charsets.UTF_8) }
+  "ENABLE_UPDATE_CHECK=true" in defines || findProperty("popkinoSideload") == "true"
+}
+if (popkinoSideload &&
+  (
+    System.getenv("AMAZON") != null ||
+      gradle.startParameter.taskNames.any { it.contains("bundle", ignoreCase = true) }
+    )
+) {
+  throw GradleException("ENABLE_UPDATE_CHECK=true is for GitHub APKs only; store builds must not ship the APK installer")
+}
+android {
+  sourceSets {
+    getByName("main").java.srcDir(if (popkinoSideload) "src/sideload/kotlin" else "src/nosideload/kotlin")
+    if (popkinoSideload) getByName("test").java.srcDir("src/sideloadTest/kotlin")
+  }
+}
+androidComponents {
+  onVariants { variant ->
+    if (popkinoSideload) variant.sources.manifests.addStaticManifestFile("src/sideload/AndroidManifest.xml")
+  }
 }

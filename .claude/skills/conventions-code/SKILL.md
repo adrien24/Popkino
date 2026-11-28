@@ -98,6 +98,15 @@ Fire TV Stick de l'utilisateur (`AFTMA08C15`, Fire OS / Android 11, 192.168.1.17
 - Options de build : des `bool.fromEnvironment` constants (`ENABLE_*`, `SUPPORTER_MODE`, `TVOS_BUILD`, `PLEZY_*` pour
   le debug).
 - Tests : référencer les constantes par leur nom (`MdblistConstants.clientId`), jamais par leur valeur.
+- Code du fork réservé à une distribution (ex. mise à jour sideload) : garde par une constante
+  `const bool k… = bool.fromEnvironment(...)` testée **en tête** de chaque point d'entrée (forçage de test limité à
+  `kDebugMode`). L'AOT l'élimine alors du binaire, vérifiable par `strings libapp.so`.
+- État : un provider qui peut être absent (provider du fork, tests upstream qui ne le fournissent pas) se lit avec
+  `context.watch<T?>()` / `read<T?>()` ; avec `provider` 6 la lecture renvoie `null` au lieu de lever.
+- GitHub : `/releases/latest` ignore les pré-versions (404 s'il n'y a que des pré-versions) ; lister `/releases`
+  pour les inclure.
+- Android natif du fork : package `com.edde746.plezy.fork`, enregistré par `ForkPlugins.register(flutterEngine)` ;
+  le code du canal sideload vit dans `android/app/src/sideload/` (D14).
 
 ## Traductions (détails)
 
@@ -109,5 +118,8 @@ Fire TV Stick de l'utilisateur (`AFTMA08C15`, Fire OS / Android 11, 192.168.1.17
 
 - `FocusedScrollScaffold` donne le focus au premier élément de contenu au D-pad : base à utiliser pour un écran de
   réglages TV.
+- Dans un `FocusableActionBar`, une action affichée sous condition garde un emplacement fixe (`debugLabel`,
+  `onPressed: null` et `child: SizedBox.shrink()` quand elle est masquée) : changer la longueur de `actions` recrée
+  les nœuds sans `debugLabel` (`_rebindNodes`) et fait perdre le focus.
 - `openExternalUrl` (`lib/utils/external_url.dart`) renvoie `false` quand rien ne peut ouvrir l'URL (fréquent sur TV,
   souvent sans navigateur) : l'appelant doit proposer une alternative, par exemple un QR code (`qr_flutter`).

@@ -2576,6 +2576,26 @@
       "license": "License",
       "sourceCode": "Source code",
       "sourceCodeQrHint": "Scan this code with your phone to open the address"
+    },
+    "update": {
+      "buttonLabel": "Update available",
+      "installedVersion": "Installed version: ${version}",
+      "downloadAndInstall": "Download and install",
+      "install": "Install",
+      "readyToInstall": "Version ${version} ready to install",
+      "progress": "${percent} %",
+      "verifying": "Verifying…",
+      "permissionExplanation": "To install the update, allow Popkino to install apps.",
+      "openSettings": "Open settings",
+      "permissionPathUnknownApps": "Choose Popkino in the list, then turn on the permission.",
+      "permissionPathDeveloper": "Developer options > Install unknown apps > Popkino",
+      "permissionPathGeneric": "Settings > My Fire TV > Developer options > Install unknown apps > Popkino (or Settings > Security > Unknown sources)",
+      "permissionDenied": "Installation is not possible without permission.",
+      "installing": "Follow the on-screen instructions to install the update.",
+      "downloadFailed": "The download failed. Check your connection.",
+      "notEnoughSpace": "Not enough space to download the update.",
+      "signatureConflict": "This version is signed with a different key than the installed one. Uninstall Popkino then install it again: you will need to add your servers again.",
+      "installFailed": "The installation failed."
     }
   }
 }

@@ -1,4 +1,5 @@
 import 'package:plezy/fork/fork_identity.dart'; // FORK: identité Popkino
+import 'package:plezy/fork/update/fork_update_hooks.dart'; // FORK: bouton-mise-a-jour
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
@@ -154,6 +155,9 @@ class UpdateService {
       if (respectCooldown) {
         await _updateLastCheckTime();
       }
+
+      // FORK: bouton-mise-a-jour — pre-releases and per-ABI APK on Android (null = upstream)
+      if (ForkUpdateHooks.performCheck(currentVersion, startup: respectCooldown) case final fork?) return await fork;
 
       final response = await (client ?? httpClient).get(
         'https://api.github.com/repos/$_githubRepo/releases/latest',

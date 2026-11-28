@@ -34,6 +34,7 @@ const _fixedEndpointSourcePaths = <String>[
   'lib/services/catalog/seerr_catalog_source.dart',
   'lib/services/discord_rpc_service.dart',
   'lib/services/update_service.dart',
+  'lib/fork/update/fork_update_controller.dart', // FORK: URL de l'API des releases
   'lib/fork/fork_identity.dart', // FORK: l'URL du flux de mise à jour y vit
   // FORK: plezy_server.dart et main.dart ne contiennent plus d'hôte https:// couvert
 ];

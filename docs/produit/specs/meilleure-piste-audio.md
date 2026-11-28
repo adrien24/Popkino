@@ -115,3 +115,7 @@ Tranché par le PO :
 - Texte de « Canaux audio » précisé (CA12), sinon la fonction serait invisible.
 - Conséquence acceptée : avec une barre de son ou un home cinéma, il faut choisir « Jusqu'à 5.1 » une fois pour avoir
   la 5.1 ; ce n'est plus automatique.
+
+## Livraison
+
+Livré le 2026-11-27 : fusionné dans main (94b778407), pré-version de test v0.2.0.

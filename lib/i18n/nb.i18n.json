@@ -2576,6 +2576,26 @@
       "license": "",
       "sourceCode": "",
       "sourceCodeQrHint": ""
+    },
+    "update": {
+      "buttonLabel": "",
+      "installedVersion": "",
+      "downloadAndInstall": "",
+      "install": "",
+      "readyToInstall": "",
+      "progress": "",
+      "verifying": "",
+      "permissionExplanation": "",
+      "openSettings": "",
+      "permissionPathUnknownApps": "",
+      "permissionPathDeveloper": "",
+      "permissionPathGeneric": "",
+      "permissionDenied": "",
+      "installing": "",
+      "downloadFailed": "",
+      "notEnoughSpace": "",
+      "signatureConflict": "",
+      "installFailed": ""
     }
   }
 }
