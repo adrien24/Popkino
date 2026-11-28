@@ -198,3 +198,22 @@ Réponses de l'utilisateur (2026-11-28) :
 
 Note pour les architectes : l'app connaît déjà le mot-clé TMDB anime (utilisé au moment de faire une demande pour
 choisir les réglages animés). Une demande Overseerr ne porte pas de marque « anime » ; il faut lire la fiche du titre.
+
+## Livraison
+
+- Livré le 2026-11-28 : commit 8c5e6b59f, fusionné sur main (9be4b101c) et poussé.
+- Recette sur la Fire TV Stick (192.168.1.173), Overseerr + Plex, en trois passes (2026-11-28) :
+  - rangée : démarrage inchangé, rangée visible en ~1 s dans Séries et Films, rangée Animés absente faute de demande
+    d'animé (normal), bibliothèque vide « FilmsTests » qui garde son message (CA16b) ;
+  - ouverture : fiche serveur en 1,2 à 1,6 s, série partiellement disponible comprise (CA8, CA10) ; titres
+    « Supprimé » vers la fiche Explorer sans erreur ; retour du focus, D-pad et mémoire sans fuite OK (CA12, CA14) ;
+  - badges, après correction (CA7 à CA7g) : un seul badge, textes entiers, couleurs, « Supprimé » en rouge,
+    « Demandé » violet pour Invincible, L'Institut et Top Boy comme sur Overseerr, Explorer inchangé, anglais OK.
+- Non vérifié sur la TV (couvert seulement par les tests automatiques) :
+  - badge « En attente » jaune, badges « Refusé » et « Échec » (CA7b) ;
+  - demande d'un autre compte absente (CA6) ;
+  - panne d'Overseerr (CA17) et fraîcheur après arrivée d'un titre (CA13) ;
+  - badge « En cours » orange (aucun téléchargement réel pendant la recette, CA7g) ;
+  - mémoire avec Overseerr déconnecté ;
+  - Jellyfin / Jellyseerr (CA19), faute de serveur Jellyfin.
+- Suite : `demandes-recentes-sans-saut` (backlog n° 18) pour que les rangées ne sautent plus à l'apparition de la rangée.
