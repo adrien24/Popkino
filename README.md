@@ -8,6 +8,31 @@ A client for Plex, Jellyfin, and Emby with a TV-friendly interface, for Android 
 Popkino is based on [Plezy](https://github.com/edde746/plezy). It is an independent project, neither developed nor
 endorsed by the Plezy project. See [TRADEMARKS.md](TRADEMARKS.md) and [NOTICE.md](NOTICE.md).
 
+Popkino is free, has no ads or in-app purchases, and its source code is public. It is designed TV first: everything
+works with a remote, the focus is always visible and the Back button does what you expect. Desktop, iPhone and iPad
+builds are published too.
+
+> **Status**: early test versions (pre-releases). Popkino is not yet on Google Play or the Amazon Appstore.
+
+## What Popkino adds
+
+On top of everything Plezy offers (Plex, Jellyfin and Emby libraries, downloads, Watch Together, companion remote,
+Seerr, and more), Popkino adds:
+
+- **Your languages first**: each video starts with the audio and subtitle languages chosen in your account (for
+  example, English audio with French subtitles), even when the server remembers another track.
+- **The best audio track**: when several tracks match your language, Popkino picks the one that matches the "Audio
+  channels" setting (5.1 rather than stereo, or the other way round) instead of the first one.
+- **Mislabelled subtitles recognised**: a subtitle track whose name says "French" is treated as French, even when the
+  language stored in the file is wrong.
+- **Skip the recap**: the "Previously on…" at the start of an episode can be skipped with a single press of OK, like
+  the intro. Intro, recap and credits chapters named in English or French are recognised without any setting.
+- **Update from the TV**: when a new version is published on GitHub, an "Update available" button appears on the home screen and
+  installs it with the remote, without a computer or a browser.
+
+Not available in Popkino: the online services run by the Plezy project, and for now Trakt, Simkl, MDBList,
+MyAnimeList and AniList.
+
 ## Download
 
 Releases are published on GitHub only (no app store). The links point to the latest release, except for Android
