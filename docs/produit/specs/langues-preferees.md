@@ -165,3 +165,7 @@ Constats hors critères (ajoutés au backlog) : choix entre plusieurs pistes de 
 5.1), sous-titres mal étiquetés dans le fichier, mode des sous-titres modifié quand on coupe « Choisir l'audio par
 langue ». À noter : Plex propose déjà un mode de sous-titres « Avec l'audio en langue étrangère », qui va dans le même
 sens que la règle de CA6.
+
+## Livraison
+
+Livré le 2026-11-27 : fusionné dans main (94b778407), pré-version de test v0.2.0.
