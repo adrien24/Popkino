@@ -123,6 +123,11 @@ Fire TV Stick de l'utilisateur (`AFTMA08C15`, Fire OS / Android 11, 192.168.1.17
 
 ## TV
 
+- Pour tester un lien `popkino://` sur TV : n'envoyer aucun `input keyevent` pendant 30 s après le `am start`
+  (lien entre apostrophes simples dans `adb shell "am start … -d '…&…'"`) et garder `adb logcat` (ligne
+  `Deep link: PlayLink`). Sur l'accueil, le focus peut être dans la barre d'actions : un OK à l'aveugle ouvre Regarder
+  ensemble ou crée un salon.
+
 - `FocusedScrollScaffold` donne le focus au premier élément de contenu au D-pad : base à utiliser pour un écran de
   réglages TV.
 - Dans un `FocusableActionBar`, une action affichée sous condition garde un emplacement fixe (`debugLabel`,

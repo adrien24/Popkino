@@ -145,3 +145,14 @@ OK passe récapitulatif et intro enchaînés ; segments « Récap » de Jellyfin
 Précisions du PO après le plan technique (2026-11-28), conformes à la spec validée (bouton « comme aujourd'hui »,
 réglages « Motif… » hors périmètre) : disparition après 7 s héritée, motif personnalisé prioritaire, formule affichée
 inchangée.
+
+## Livraison
+
+Livré le 2026-11-28 : commit 81691e3b2, fusionné sur main (3271b78ff). Build de recette 0.3.0+10 sur la Fire TV.
+
+- Vérifié sur la TV : CA15 sur S3E8 (« Passer l'intro » pendant le récap, OK reprend à 1:19) ; disparition après 7 s
+  et retour du bouton avec le bandeau, conformes au comportement hérité.
+- Validés par le code et les tests automatiques seulement : CA1 à CA13 ; Jellyfin (CA3, CA4b), faute de serveur
+  Jellyfin ; mots français (CA7, CA8), faute de fichier à chapitres français (décision de l'utilisateur).
+- Non essayé sur la TV : S3E9 et S3E10 (fin de CA15) ; le premier OK après l'ouverture de l'épisode (CA14), vu une
+  fois sans saut et non reproduit, suivi au backlog comme anomalie `premier-ok-bouton-saut`.
