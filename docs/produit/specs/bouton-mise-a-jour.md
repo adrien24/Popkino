@@ -202,3 +202,22 @@ Aucune. Spec validée par l'utilisateur le 2026-11-28 (proposition CA24 accepté
 sans changement de fond) : CA6 texte simple, CA11 « Réessayer », CA17 version intermédiaire ; CA10 fenêtre rouverte avec « Installer » et
 chemin complet si besoin ; CA19 réinstallation unique plutôt que de garder la clé de test liée à l'app ; les
 releases publient des APK prêts à installer (plus d'archive à extraire, liens du README à mettre à jour).
+
+## Livraison
+
+Livré le 2026-11-28 : commit 72fac63c2, fusionné sur main (41c39c5e7).
+
+Recette sur la Freebox Pop (Android 10, 32 bits), avec une pré-version de test signée avec la clé debug :
+- vus à l'écran et OK : CA1, CA2, CA3, CA5 à CA13. L'étiquette du bouton, mal placée au premier essai, a été corrigée
+  et revérifiée ;
+- couverts par les tests, pas vus à l'écran : CA23 et CA24 (la fenêtre de démarrage ne s'est pas ouverte, sans doute
+  à cause du délai de 6 h), CA21 (Paramètres > Vérifier), CA19 (à voir à la première version signée avec la clé
+  définitive) ; CA4, CA14 à CA18, CA20, CA22, CA25 et CA26 par les tests et les builds.
+
+Constats :
+- sur la Freebox, « Ouvrir les réglages » ouvre la liste générale « Installation d'applis inconnues », où Popkino
+  figure (cas prévu par CA10) ;
+- après l'installation, Android revient à l'écran d'accueil de la TV au lieu de proposer « Ouvrir » (étape 7 du
+  parcours) : il faut relancer Popkino soi-même ;
+- pas encore essayé sur la Fire TV Stick, la cible annoncée : à surveiller à la prochaine mise à jour.
+
