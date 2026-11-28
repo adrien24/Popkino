@@ -56,7 +56,10 @@ class _LibraryRecommendedTabState extends BaseLibraryTabState<MediaHub, LibraryR
   final TvSpotlightController _spotlight = TvSpotlightController();
   HubFocusMemory _hubFocusMemory = HubFocusMemory();
 
-  void _setSpotlightItem(MediaItem item) => _spotlight.select(item);
+  void _setSpotlightItem(MediaItem item) {
+    // FORK: demandes-recentes-sans-saut
+    if (!forkIsSkeletonItem(item)) _spotlight.select(item); // FORK: demandes-recentes-sans-saut
+  } // FORK: demandes-recentes-sans-saut
 
   @override
   void didUpdateWidget(LibraryRecommendedTab oldWidget) {
@@ -189,6 +192,7 @@ class _LibraryRecommendedTabState extends BaseLibraryTabState<MediaHub, LibraryR
   Future<void> loadItems() => runLoadTransaction(_loadRecommendedHubs);
 
   Future<List<MediaHub>> _loadRecommendedHubs() async {
+    unawaited(forkWarmUpRecentRequestCounts(context, widget.library)); // FORK: demandes-recentes-sans-saut
     // Backend-aware fetch: Plex hits /hubs/sections, Jellyfin synthesises
     // Continue Watching + Next Up + Recently Added.
     final client = context.tryGetMediaClientForServer(serverIdOrNull(widget.library.serverId));
@@ -336,7 +340,7 @@ class _LibraryRecommendedTabState extends BaseLibraryTabState<MediaHub, LibraryR
     return TvSpotlightScaffold(
       hubs: tvHubs,
       spotlightListenable: _spotlight,
-      resolveSpotlight: () => _spotlight.resolve(tvHubs),
+      resolveSpotlight: () => _spotlight.resolve(forkSpotlightHubs(tvHubs)), // FORK: demandes-recentes-sans-saut
       resolveClient: (spotlight) =>
           context.tryGetMediaClientForServer(serverIdOrNull(spotlight?.serverId ?? widget.library.serverId)),
       foreground: tvHubs.isEmpty

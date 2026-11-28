@@ -175,3 +175,16 @@ l'implémentation privée. On ne duplique pas la logique et on ne contourne pas 
 (`*.g.dart`) ne sont pas étendus : le fork lit les champs manquants dans le JSON brut avec ses propres modèles.
 Conséquences : une garde `test/fork/` vérifie la présence de chaque méthode ; à la fusion, on la replace à la fin de sa
 section.
+
+## D16 — Cache disque d'une fonctionnalité du fork (2026-11-28)
+Contexte : `demandes-recentes-sans-saut` doit garder un petit souvenir d'une session à l'autre, alors que la spec
+interdit toute lecture au démarrage. `SharedPreferencesWithCache` charge toutes ses clés au démarrage et entre dans la
+sauvegarde Android ; une table `drift` imposerait une migration dans un fichier upstream.
+Décision : un souvenir propre au fork, dont la perte est sans gravité, est un fichier JSON versionné (`"v"`) dans
+`<getApplicationCacheDirectory()>/popkino_<sujet>/`. Il est lu paresseusement une fois par processus, à la première
+utilisation de la fonctionnalité, jamais au démarrage. Il est écrit tout de suite et seulement s'il change, de façon
+atomique (`.tmp` puis `rename`), une écriture à la fois (`SerialFutureQueue`), et plafonné. S'il dépend d'un compte,
+il porte un propriétaire haché (SHA-256 tronqué) et devient vide quand ce propriétaire change. Un fichier illisible ou
+d'une autre version est supprimé et ignoré. Jamais de `JsonPref` pour ces données.
+Conséquences : aucun coût au démarrage, aucune donnée sauvegardée hors de l'appareil (formulaire Sécurité des données
+inchangé), et un cache vidé par le système ramène simplement au comportement sans souvenir.

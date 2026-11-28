@@ -4,6 +4,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:clock/clock.dart';
 import 'package:fake_async/fake_async.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
@@ -190,6 +191,8 @@ class _Setup {
   );
 
   Future<ForkRecentRequestsRow?> row(MediaLibrary library) => repo.rowFor(library, ctx);
+
+  Future<ForkRowResult> result(MediaLibrary library) => repo.rowResultFor(library, ctx);
 }
 
 List<int> _tmdbIds(ForkRecentRequestsRow row) => [
@@ -736,6 +739,125 @@ void main() {
       final s = _Setup(libraries: [films], backend: backend, product: SeerrProduct.overseerr);
       final row = (await s.row(films))!;
       expect(row.hub.items.single.raw?[kForkRequestBadgeRawKey], ForkRequestBadge.deleted.name);
+    });
+  });
+
+  group('rowResultFor conclusive (demandes-recentes-sans-saut)', () {
+    test('a produced row is conclusive and shares the hub builder', () async {
+      final backend = _Backend()
+        ..requestsBody = {
+          'results': [_req(1, 'movie', 11)],
+        };
+      final s = _Setup(libraries: [films], backend: backend);
+      final r = await s.result(films);
+      expect(r.conclusive, isTrue);
+      expect(r.row!.hub.id, forkRecentRequestsHub(films, const []).id);
+      expect(r.row!.hub.identifier, kRecentRequestsHubIdentifier);
+      expect(r.row!.hub.type, 'mixed');
+      expect(r.row!.hub.serverId, isNull);
+    });
+
+    test('an empty list is conclusive', () async {
+      final s = _Setup(libraries: [films]);
+      final r = await s.result(films);
+      expect(r.row, isNull);
+      expect(r.conclusive, isTrue);
+    });
+
+    test('a list without candidate for this shelf is conclusive', () async {
+      final backend = _Backend()
+        ..requestsBody = {
+          'results': [_req(1, 'movie', 11)],
+        };
+      final s = _Setup(libraries: [shows], backend: backend);
+      final r = await s.result(shows);
+      expect(r.row, isNull);
+      expect(r.conclusive, isTrue);
+    });
+
+    test('every candidate read and none retained is conclusive', () async {
+      final backend = _Backend()
+        ..animeIds = {22}
+        ..requestsBody = {
+          'results': [_req(4, 'tv', 22, mediaStatus: 5, ratingKey: '22')],
+        };
+      final server = _FakeServerClient({'22': _serverItem('22', 'lib3')});
+      final s = _Setup(libraries: [shows, animes], servers: {'srvA': server}, backend: backend);
+      final r = await s.result(shows);
+      expect(r.row, isNull);
+      expect(r.conclusive, isTrue);
+    });
+
+    test('a failing details lookup is not conclusive', () async {
+      final backend = _Backend()
+        ..failingDetails = {11}
+        ..requestsBody = {
+          'results': [_req(1, 'movie', 11)],
+        };
+      final s = _Setup(libraries: [films], backend: backend);
+      final r = await s.result(films);
+      expect(r.row, isNull);
+      expect(r.conclusive, isFalse);
+    });
+
+    test('an expired budget is not conclusive', () {
+      fakeAsync((async) {
+        final backend = _Backend()
+          ..hangingDetails = {for (var i = 11; i < 24; i++) i}
+          ..requestsBody = {
+            'results': [for (var i = 11; i < 24; i++) _req(i, 'movie', i)],
+          };
+        final s = _Setup(libraries: [films], backend: backend);
+        ForkRowResult? result;
+        unawaited(s.result(films).then((r) => result = r));
+        async.elapse(const Duration(seconds: 16));
+        expect(result, isNotNull);
+        expect(result!.row, isNull);
+        expect(result!.conclusive, isFalse);
+      });
+    });
+
+    test('a list failure, then the negative cache, are not conclusive', () async {
+      final backend = _Backend()..requestsHandler = () async => _json({'message': 'x'}, status: 500);
+      final s = _Setup(libraries: [films], backend: backend);
+      expect((await s.result(films)).conclusive, isFalse);
+      expect((await s.result(films)).conclusive, isFalse);
+      expect(backend.requestCalls, 1);
+    });
+
+    test('an unsuitable library is not conclusive', () async {
+      final noServer = MediaLibrary(id: 'x', backend: MediaBackend.plex, title: 'Films', kind: MediaKind.movie);
+      final s = _Setup(libraries: [noServer]);
+      expect((await s.result(noServer)).conclusive, isFalse);
+    });
+  });
+
+  group('recentRowFor (CA9)', () {
+    test('serves the last row for 30 s, per library, and a conclusive empty answer drops it', () async {
+      final backend = _Backend()
+        ..requestsBody = {
+          'results': [_req(1, 'movie', 11)],
+        };
+      final s = _Setup(libraries: [films, shows], backend: backend);
+      expect(s.repo.recentRowFor(films), isNull);
+      final row = (await s.row(films))!;
+      expect(s.repo.recentRowFor(films), same(row));
+      expect(s.repo.recentRowFor(shows), isNull);
+
+      final now = DateTime.now();
+      withClock(Clock(() => now.add(const Duration(seconds: 29))), () {
+        expect(s.repo.recentRowFor(films), same(row));
+      });
+      withClock(Clock(() => now.add(const Duration(seconds: 31))), () {
+        expect(s.repo.recentRowFor(films), isNull);
+      });
+
+      backend.requestsBody = {'results': <Object>[]};
+      final later = now.add(const Duration(seconds: 40));
+      final r = await withClock(Clock(() => later), () => s.result(films));
+      expect(r.conclusive, isTrue);
+      expect(r.row, isNull);
+      withClock(Clock(() => later), () => expect(s.repo.recentRowFor(films), isNull));
     });
   });
 

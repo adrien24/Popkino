@@ -36,6 +36,9 @@ const String kRecentRequestsHubIdPrefix = 'popkino.recentRequests:';
 /// `MediaHub.identifier` of the fork hub.
 const String kRecentRequestsHubIdentifier = 'popkino.recentRequests';
 
+/// A row is only shown when the request list behind it is younger than this when the row arrives.
+const Duration kRecentRequestsShowWithin = Duration(seconds: 30);
+
 const int _kRequestsTake = 100;
 const Duration _listFreshness = Duration(seconds: 30);
 const Duration _failureBackoff = Duration(seconds: 60);
@@ -84,6 +87,20 @@ class ForkRecentRequestsRow {
   const ForkRecentRequestsRow({required this.hub, required this.entriesByItemId, required this.fetchedAt});
 }
 
+/// Outcome of [ForkRecentRequestsRepository.rowResultFor]: the row (or null) and whether a null row is a firm "nothing
+/// to show" ([conclusive]) rather than "unknown" (failure, timeout, offline server).
+typedef ForkRowResult = ({ForkRecentRequestsRow? row, bool conclusive});
+
+/// The hub of the recent-requests row for [library]; the placeholder row uses the same builder so both share ids.
+MediaHub forkRecentRequestsHub(MediaLibrary library, List<MediaItem> items) => MediaHub(
+  id: '$kRecentRequestsHubIdPrefix${library.globalKey}',
+  identifier: kRecentRequestsHubIdentifier,
+  title: t.fork.recentRequests.title,
+  type: 'mixed',
+  items: items,
+  size: items.length,
+);
+
 class ForkRecentRequestsRepository {
   static final Expando<ForkRecentRequestsRepository> _instances = Expando('ForkRecentRequestsRepository');
 
@@ -113,15 +130,44 @@ class ForkRecentRequestsRepository {
 
   final Map<String, _AnimeLookup> _animeLibraryByServer = {};
 
+  /// Last row built per library global key (memory only).
+  final Map<String, ForkRecentRequestsRow> _lastRowByLibrary = {};
+
+  /// The last row built for [library], without waiting, when its request list is younger than
+  /// [kRecentRequestsShowWithin]; null otherwise.
+  ForkRecentRequestsRow? recentRowFor(MediaLibrary library) {
+    final row = _lastRowByLibrary[library.globalKey];
+    if (row == null) return null;
+    return clock.now().difference(row.fetchedAt) < kRecentRequestsShowWithin ? row : null;
+  }
+
   /// The recent-requests row for [library], or null when there is nothing to show (no list, failure, empty row).
-  Future<ForkRecentRequestsRow?> rowFor(MediaLibrary library, ForkRowContext ctx) async {
+  Future<ForkRecentRequestsRow?> rowFor(MediaLibrary library, ForkRowContext ctx) async =>
+      (await rowResultFor(library, ctx)).row;
+
+  /// Like [rowFor], and tells whether a null row is conclusive (the server answered and there is nothing to show).
+  Future<ForkRowResult> rowResultFor(MediaLibrary library, ForkRowContext ctx) async {
+    final result = await _buildRow(library, ctx);
+    final row = result.row;
+    if (row != null) {
+      _lastRowByLibrary[library.globalKey] = row;
+    } else if (result.conclusive) {
+      _lastRowByLibrary.remove(library.globalKey);
+    }
+    return result;
+  }
+
+  Future<ForkRowResult> _buildRow(MediaLibrary library, ForkRowContext ctx) async {
+    const inconclusive = (row: null, conclusive: false);
+    const empty = (row: null, conclusive: true);
     final serverId = library.serverId;
-    if (serverId == null) return null;
+    if (serverId == null) return inconclusive;
     // Callers already filter, but no network call must ever happen for a library that is neither movies nor shows.
-    if (library.kind != MediaKind.movie && library.kind != MediaKind.show) return null;
+    if (library.kind != MediaKind.movie && library.kind != MediaKind.show) return inconclusive;
 
     final snapshot = await _currentList();
-    if (snapshot == null || snapshot.list.isEmpty) return null;
+    if (snapshot == null) return inconclusive;
+    if (snapshot.list.isEmpty) return empty;
 
     final budget = _Budget(_rowBudget);
     try {
@@ -129,10 +175,10 @@ class ForkRecentRequestsRepository {
         _animeLibraryFor(library, serverId, ctx, snapshot.list).then((key) => (key: key)),
         budget.whenExpired.then((_) => null),
       ]);
-      if (anime == null) return null;
+      if (anime == null) return inconclusive;
 
       final shelf = shelfForLibrary(library, animeLibraryGlobalKey: anime.key);
-      if (shelf == null) return null;
+      if (shelf == null) return inconclusive;
       final serverHasAnimeLibrary = anime.key != null;
 
       final candidates = [
@@ -143,15 +189,19 @@ class ForkRecentRequestsRepository {
             r,
       ];
 
+      if (candidates.isEmpty) return empty;
+
       final retained = <(ForkRecentRequest, ForkTitleSummary)>[];
-      await _readOrdered(candidates, budget, (request, summary) {
+      var unreadable = 0;
+      final read = await _readOrdered(candidates, budget, (request, summary) {
+        if (summary == null) unreadable++;
         if (summary != null &&
             belongsTo(shelf, request.kind, summary.isAnime, serverHasAnimeLibrary: serverHasAnimeLibrary)) {
           retained.add((request, summary));
         }
         return retained.length >= kRecentRequestsRowLimit;
       });
-      if (retained.isEmpty) return null;
+      if (retained.isEmpty) return (row: null, conclusive: read.complete && unreadable == 0);
 
       final entries = <String, ForkRecentRequestEntry>{};
       final items = <MediaItem>[];
@@ -170,19 +220,15 @@ class ForkRecentRequestsRepository {
           appLogger.d('RecentRequests: skipped tmdb ${request.tmdbId} (mapping failed)', error: e);
         }
       }
-      if (items.isEmpty) return null;
+      if (items.isEmpty) return inconclusive;
 
-      return ForkRecentRequestsRow(
-        hub: MediaHub(
-          id: '$kRecentRequestsHubIdPrefix${library.globalKey}',
-          identifier: kRecentRequestsHubIdentifier,
-          title: t.fork.recentRequests.title,
-          type: 'mixed',
-          items: items,
-          size: items.length,
+      return (
+        row: ForkRecentRequestsRow(
+          hub: forkRecentRequestsHub(library, items),
+          entriesByItemId: entries,
+          fetchedAt: snapshot.at,
         ),
-        entriesByItemId: entries,
-        fetchedAt: snapshot.at,
+        conclusive: true,
       );
     } finally {
       budget.dispose();
@@ -264,8 +310,8 @@ class ForkRecentRequestsRepository {
 
   /// Reads the summaries of [entries] in order, at most [_maxDetailsInFlight] at a time, and hands each result to
   /// [onResult] **in list order**. Stops when [onResult] returns true, when every entry was consumed, or when [budget]
-  /// expires (results received so far were already handed over).
-  Future<void> _readOrdered(
+  /// expires (results received so far were already handed over). `complete` is true when every entry was consumed.
+  Future<({bool complete})> _readOrdered(
     List<ForkRecentRequest> entries,
     _Budget budget,
     bool Function(ForkRecentRequest request, ForkTitleSummary? summary) onResult,
@@ -297,12 +343,13 @@ class ForkRecentRequestsRepository {
     }
 
     drain();
-    if (done.isCompleted) return;
+    if (done.isCompleted) return (complete: consumed >= entries.length);
     for (var i = 0; i < _maxDetailsInFlight && i < entries.length; i++) {
       unawaited(worker());
     }
     await Future.any([done.future, budget.whenExpired]);
     stopped = true;
+    return (complete: consumed >= entries.length);
   }
 
   // ---------- Anime library ----------
