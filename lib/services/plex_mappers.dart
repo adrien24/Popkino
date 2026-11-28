@@ -13,6 +13,7 @@
 
 import 'package:json_annotation/json_annotation.dart';
 import '../media/chapter_marker_classifier.dart';
+import '../fork/skip_markers.dart'; // FORK: motifs-marqueurs-par-defaut — récap et mots FR
 import '../media/artist_discography.dart';
 import '../media/ids.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
@@ -1435,13 +1436,18 @@ PlaybackExtras plexPlaybackExtrasFromCacheJson(
   String? creditsPattern,
   bool forceChapterFallback = false,
 }) {
-  return PlaybackExtras.withChapterFallback(
-    chapters: plexChaptersFromCacheJson(metadataJson),
-    markers: plexMarkersFromCacheJson(metadataJson),
-    classifier: classifier,
-    introPatternStr: introPattern,
-    creditsPatternStr: creditsPattern,
-    forceChapterFallback: forceChapterFallback,
+  return ForkSkipMarkers.apply(
+    // FORK: motifs-marqueurs-par-defaut — récap et mots FR
+    PlaybackExtras.withChapterFallback(
+      chapters: plexChaptersFromCacheJson(metadataJson),
+      markers: plexMarkersFromCacheJson(metadataJson),
+      classifier: classifier,
+      introPatternStr: introPattern,
+      creditsPatternStr: creditsPattern,
+      forceChapterFallback: forceChapterFallback,
+    ),
+    introPattern: introPattern,
+    creditsPattern: creditsPattern,
   );
 }
 

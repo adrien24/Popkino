@@ -114,6 +114,13 @@ Fire TV Stick de l'utilisateur (`AFTMA08C15`, Fire OS / Android 11, 192.168.1.17
   normalisés par `scripts/checks/clean_translations.py`.
 - Les textes en dur dans les widgets sont détectés par `scripts/checks/check_hardcoded_strings.py`.
 
+## Marqueurs intro/générique
+
+- Les chapitres d'intro et de générique sont classés par `ChapterMarkerClassifier` (modèle intégré, seuil 0,8). Les
+  motifs `intro_pattern` / `credits_pattern` ne servent que s'ils sont personnalisés, ou pour reclasser des types de
+  marqueurs serveur inconnus : changer `defaultIntroPattern` ne change donc pas la détection des chapitres. Les ajouts
+  du fork (récap, mots français) passent par `lib/fork/skip_markers.dart`.
+
 ## TV
 
 - `FocusedScrollScaffold` donne le focus au premier élément de contenu au D-pad : base à utiliser pour un écran de
