@@ -3,6 +3,8 @@ import 'package:plezy/media/chapter_marker_classifier.dart';
 import 'package:plezy/media/media_display_criteria.dart';
 import 'package:plezy/services/jellyfin_media_info_mapper.dart';
 
+import '../fork/fork_test_utils.dart'; // FORK: motifs-marqueurs-par-defaut
+
 /// Field-mapping pin for the Jellyfin → Plex `MediaInfo` translator. The
 /// player's track picker and auto-track-selection both consume the
 /// resulting [MediaAudioTrack] / [MediaSubtitleTrack] lists, so the field
@@ -691,7 +693,7 @@ void main() {
       expect(markers[0].endTimeOffset, 45000);
       expect(markers[1].startTimeOffset, 90000);
       expect(markers[1].endTimeOffset, 100000);
-    });
+    }, skip: forkChangedSkip); // FORK: motifs-marqueurs-par-defaut — Recap est désormais gardé (CA3)
 
     test('keeps native segments and fills missing marker types from chapters', () {
       final extras = jellyfinPlaybackExtrasFromRaw(

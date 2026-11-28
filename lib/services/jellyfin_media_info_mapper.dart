@@ -1,3 +1,4 @@
+import '../fork/skip_markers.dart'; // FORK: motifs-marqueurs-par-defaut — récap et mots FR
 import '../media/chapter_marker_classifier.dart';
 import '../media/media_version.dart';
 import '../media/media_source_info.dart';
@@ -133,13 +134,18 @@ PlaybackExtras jellyfinPlaybackExtrasFromRaw(
     }
     MediaChapter.backfillEndOffsets(mapped, runtimeMs: runtimeMs);
   }
-  return PlaybackExtras.withChapterFallback(
-    chapters: mapped,
-    markers: markers,
-    classifier: classifier,
-    introPatternStr: introPattern,
-    creditsPatternStr: creditsPattern,
-    forceChapterFallback: forceChapterFallback,
+  return ForkSkipMarkers.apply(
+    // FORK: motifs-marqueurs-par-defaut — récap et mots FR
+    PlaybackExtras.withChapterFallback(
+      chapters: mapped,
+      markers: markers,
+      classifier: classifier,
+      introPatternStr: introPattern,
+      creditsPatternStr: creditsPattern,
+      forceChapterFallback: forceChapterFallback,
+    ),
+    introPattern: introPattern,
+    creditsPattern: creditsPattern,
   );
 }
 
@@ -167,6 +173,8 @@ String? _jellyfinSegmentMarkerType(String? value) {
     case 'outro':
     case 'credits':
       return 'credits';
+    case 'recap':
+      return ForkSkipMarkers.recapType; // FORK: motifs-marqueurs-par-defaut — segment Recap (#3051)
   }
   return null;
 }

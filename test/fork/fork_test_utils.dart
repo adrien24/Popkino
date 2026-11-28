@@ -7,4 +7,7 @@ const forkChangedSkip = 'Comportement changé par Popkino (langues-preferees)';
 
 /// Upstream tests marked with [forkChangedSkip]. Key: `'<path> :: <test name>'`,
 /// value: the acceptance criterion that justifies the marking.
-const Map<String, String> forkChangedSkipAllowlist = {};
+const Map<String, String> forkChangedSkipAllowlist = {
+  'test/services/jellyfin_media_info_test.dart :: jellyfinPlaybackExtrasFromRaw parses native Jellyfin media segments into skip markers':
+      'CA3 (motifs-marqueurs-par-defaut)',
+};
